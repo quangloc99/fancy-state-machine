@@ -1,0 +1,8 @@
+build
+dist
+coverage
+
+# Ignore because of the align comments
+tsconfig.base.json
+
+# vim: filetype=gitignore
