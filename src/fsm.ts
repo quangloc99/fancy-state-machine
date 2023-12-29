@@ -21,10 +21,11 @@ export type EventDataTuple<
     EventName extends keyof Events = keyof Events,
 > = EventName extends unknown ? [EventName, ...Events[EventName]] : never;
 
+export type EnterHandlerFunctionReturnType<E extends EventDataMap> = void | undefined | null | EventDataTuple<E>;
 export type EnterHandlerFunction<E extends EventDataMap, Params extends unknown[] = unknown[]> = (
     this: void,
     ...params: Params
-) => Promisable<void | undefined | null | EventDataTuple<E>>;
+) => Promisable<EnterHandlerFunctionReturnType<E>>;
 
 export type TransitionTable<States extends StateDataMap, Events extends EventDataMap> = {
     [SourceStateName in keyof States]: {
@@ -104,31 +105,34 @@ export class FSM<S extends StateDataMap, E extends EventDataMap> {
             onTransition = NOP_FUNC,
             onInvalidTransition = NOP_FUNC,
         } = options ?? {};
-        const [eventName, ...eventData] = event;
-        const [curStateName, ...curStateData] = this.stateData;
-        const transitionData = this.transitionTable[curStateName].transitions[eventName];
-        if (transitionData === undefined) {
-            onInvalidTransition(this.stateData, event);
-            if (!ignoreInvalidTransition) {
-                // TODO additional data
-                throw new Error(
-                    `No transition from state ${JSON.stringify(String(this.stateData[0]))} when event ${JSON.stringify(
-                        String(event[0])
-                    )} is fired`,
-                    { cause: new InvalidTransitionEventCause<S, E>(this.stateData, event) }
-                );
-            } else {
-                return;
+
+        let curEvent: EnterHandlerFunctionReturnType<E> = event;
+
+        while (Array.isArray(curEvent)) {
+            const [eventName, ...eventData] = event;
+            const [curStateName, ...curStateData] = this.stateData;
+            const transitionData = this.transitionTable[curStateName].transitions[eventName];
+            if (transitionData === undefined) {
+                onInvalidTransition(this.stateData, event);
+                if (!ignoreInvalidTransition) {
+                    throw new Error(
+                        `No transition from state ${JSON.stringify(
+                            String(this.stateData[0])
+                        )} when event ${JSON.stringify(String(event[0]))} is fired`,
+                        { cause: new InvalidTransitionEventCause<S, E>(this.stateData, event) }
+                    );
+                } else {
+                    return;
+                }
             }
+            const newData = await transitionData.transitionHandler(...curStateData, ...eventData);
+            const newState = [transitionData.target, ...newData] as StateDataTuple<S>;
+
+            onTransition(this.stateData, event, newState);
+            this.stateData = newState;
+
+            curEvent = await this.transitionTable[this.stateData[0]].enterHandler(...newData);
         }
-        const newData = await transitionData.transitionHandler(...curStateData, ...eventData);
-        const newState = [transitionData.target, ...newData] as StateDataTuple<S>;
-
-        onTransition(this.stateData, event, newState);
-        this.stateData = newState;
-
-        // TODO redirect event here.
-        await this.transitionTable[this.stateData[0]].enterHandler(...newData);
     }
 
     getErrorCause<Cause extends AllCauses<S, E>>(e: unknown, causeClass: Constructor<Cause>): Cause | undefined {
