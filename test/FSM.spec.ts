@@ -11,7 +11,7 @@ describe(FSMBuilder, () => {
             .addTransition('green-light', 'next-light', 'yellow-light')
             .addTransition('yellow-light', 'next-light', 'red-light');
 
-        it('do `next-light` 6 times', async () => {
+        test('do `next-light` 6 times', async () => {
             const fsm = fsmBuilder.build('green-light');
 
             await fsm.dispatch('next-light');
@@ -29,7 +29,7 @@ describe(FSMBuilder, () => {
             expect(fsm.stateData).toEqual(['green-light']);
         });
 
-        it('check return type', async () => {
+        it('should have correct return value', async () => {
             const fsm = fsmBuilder.build('green-light');
             const res = await fsm.dispatch('next-light');
             expect(res).toMatchInlineSnapshot(`
