@@ -1,0 +1,1518 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`FSMBuilder simple calculator 0= 0 1`] = `
+[
+  "entering",
+  0n,
+  1n,
+  0n,
+]
+`;
+
+exports[`FSMBuilder simple calculator 0= 0 2`] = `
+[
+  "result",
+  0n,
+]
+`;
+
+exports[`FSMBuilder simple calculator 0-2*3*4*5*6*7*8*9*10*11*12*13*14*15*16*17*18*19*20= -2432902008176640000 1`] = `
+[
+  "entering",
+  0n,
+  1n,
+  0n,
+]
+`;
+
+exports[`FSMBuilder simple calculator 0-2*3*4*5*6*7*8*9*10*11*12*13*14*15*16*17*18*19*20= -2432902008176640000 2`] = `
+[
+  "start-entering",
+  0n,
+  -1n,
+]
+`;
+
+exports[`FSMBuilder simple calculator 0-2*3*4*5*6*7*8*9*10*11*12*13*14*15*16*17*18*19*20= -2432902008176640000 3`] = `
+[
+  "entering",
+  0n,
+  -1n,
+  2n,
+]
+`;
+
+exports[`FSMBuilder simple calculator 0-2*3*4*5*6*7*8*9*10*11*12*13*14*15*16*17*18*19*20= -2432902008176640000 4`] = `
+[
+  "start-entering",
+  0n,
+  -2n,
+]
+`;
+
+exports[`FSMBuilder simple calculator 0-2*3*4*5*6*7*8*9*10*11*12*13*14*15*16*17*18*19*20= -2432902008176640000 5`] = `
+[
+  "entering",
+  0n,
+  -2n,
+  3n,
+]
+`;
+
+exports[`FSMBuilder simple calculator 0-2*3*4*5*6*7*8*9*10*11*12*13*14*15*16*17*18*19*20= -2432902008176640000 6`] = `
+[
+  "start-entering",
+  0n,
+  -6n,
+]
+`;
+
+exports[`FSMBuilder simple calculator 0-2*3*4*5*6*7*8*9*10*11*12*13*14*15*16*17*18*19*20= -2432902008176640000 7`] = `
+[
+  "entering",
+  0n,
+  -6n,
+  4n,
+]
+`;
+
+exports[`FSMBuilder simple calculator 0-2*3*4*5*6*7*8*9*10*11*12*13*14*15*16*17*18*19*20= -2432902008176640000 8`] = `
+[
+  "start-entering",
+  0n,
+  -24n,
+]
+`;
+
+exports[`FSMBuilder simple calculator 0-2*3*4*5*6*7*8*9*10*11*12*13*14*15*16*17*18*19*20= -2432902008176640000 9`] = `
+[
+  "entering",
+  0n,
+  -24n,
+  5n,
+]
+`;
+
+exports[`FSMBuilder simple calculator 0-2*3*4*5*6*7*8*9*10*11*12*13*14*15*16*17*18*19*20= -2432902008176640000 10`] = `
+[
+  "start-entering",
+  0n,
+  -120n,
+]
+`;
+
+exports[`FSMBuilder simple calculator 0-2*3*4*5*6*7*8*9*10*11*12*13*14*15*16*17*18*19*20= -2432902008176640000 11`] = `
+[
+  "entering",
+  0n,
+  -120n,
+  6n,
+]
+`;
+
+exports[`FSMBuilder simple calculator 0-2*3*4*5*6*7*8*9*10*11*12*13*14*15*16*17*18*19*20= -2432902008176640000 12`] = `
+[
+  "start-entering",
+  0n,
+  -720n,
+]
+`;
+
+exports[`FSMBuilder simple calculator 0-2*3*4*5*6*7*8*9*10*11*12*13*14*15*16*17*18*19*20= -2432902008176640000 13`] = `
+[
+  "entering",
+  0n,
+  -720n,
+  7n,
+]
+`;
+
+exports[`FSMBuilder simple calculator 0-2*3*4*5*6*7*8*9*10*11*12*13*14*15*16*17*18*19*20= -2432902008176640000 14`] = `
+[
+  "start-entering",
+  0n,
+  -5040n,
+]
+`;
+
+exports[`FSMBuilder simple calculator 0-2*3*4*5*6*7*8*9*10*11*12*13*14*15*16*17*18*19*20= -2432902008176640000 15`] = `
+[
+  "entering",
+  0n,
+  -5040n,
+  8n,
+]
+`;
+
+exports[`FSMBuilder simple calculator 0-2*3*4*5*6*7*8*9*10*11*12*13*14*15*16*17*18*19*20= -2432902008176640000 16`] = `
+[
+  "start-entering",
+  0n,
+  -40320n,
+]
+`;
+
+exports[`FSMBuilder simple calculator 0-2*3*4*5*6*7*8*9*10*11*12*13*14*15*16*17*18*19*20= -2432902008176640000 17`] = `
+[
+  "entering",
+  0n,
+  -40320n,
+  9n,
+]
+`;
+
+exports[`FSMBuilder simple calculator 0-2*3*4*5*6*7*8*9*10*11*12*13*14*15*16*17*18*19*20= -2432902008176640000 18`] = `
+[
+  "start-entering",
+  0n,
+  -362880n,
+]
+`;
+
+exports[`FSMBuilder simple calculator 0-2*3*4*5*6*7*8*9*10*11*12*13*14*15*16*17*18*19*20= -2432902008176640000 19`] = `
+[
+  "entering",
+  0n,
+  -362880n,
+  1n,
+]
+`;
+
+exports[`FSMBuilder simple calculator 0-2*3*4*5*6*7*8*9*10*11*12*13*14*15*16*17*18*19*20= -2432902008176640000 20`] = `
+[
+  "entering",
+  0n,
+  -362880n,
+  10n,
+]
+`;
+
+exports[`FSMBuilder simple calculator 0-2*3*4*5*6*7*8*9*10*11*12*13*14*15*16*17*18*19*20= -2432902008176640000 21`] = `
+[
+  "start-entering",
+  0n,
+  -3628800n,
+]
+`;
+
+exports[`FSMBuilder simple calculator 0-2*3*4*5*6*7*8*9*10*11*12*13*14*15*16*17*18*19*20= -2432902008176640000 22`] = `
+[
+  "entering",
+  0n,
+  -3628800n,
+  1n,
+]
+`;
+
+exports[`FSMBuilder simple calculator 0-2*3*4*5*6*7*8*9*10*11*12*13*14*15*16*17*18*19*20= -2432902008176640000 23`] = `
+[
+  "entering",
+  0n,
+  -3628800n,
+  11n,
+]
+`;
+
+exports[`FSMBuilder simple calculator 0-2*3*4*5*6*7*8*9*10*11*12*13*14*15*16*17*18*19*20= -2432902008176640000 24`] = `
+[
+  "start-entering",
+  0n,
+  -39916800n,
+]
+`;
+
+exports[`FSMBuilder simple calculator 0-2*3*4*5*6*7*8*9*10*11*12*13*14*15*16*17*18*19*20= -2432902008176640000 25`] = `
+[
+  "entering",
+  0n,
+  -39916800n,
+  1n,
+]
+`;
+
+exports[`FSMBuilder simple calculator 0-2*3*4*5*6*7*8*9*10*11*12*13*14*15*16*17*18*19*20= -2432902008176640000 26`] = `
+[
+  "entering",
+  0n,
+  -39916800n,
+  12n,
+]
+`;
+
+exports[`FSMBuilder simple calculator 0-2*3*4*5*6*7*8*9*10*11*12*13*14*15*16*17*18*19*20= -2432902008176640000 27`] = `
+[
+  "start-entering",
+  0n,
+  -479001600n,
+]
+`;
+
+exports[`FSMBuilder simple calculator 0-2*3*4*5*6*7*8*9*10*11*12*13*14*15*16*17*18*19*20= -2432902008176640000 28`] = `
+[
+  "entering",
+  0n,
+  -479001600n,
+  1n,
+]
+`;
+
+exports[`FSMBuilder simple calculator 0-2*3*4*5*6*7*8*9*10*11*12*13*14*15*16*17*18*19*20= -2432902008176640000 29`] = `
+[
+  "entering",
+  0n,
+  -479001600n,
+  13n,
+]
+`;
+
+exports[`FSMBuilder simple calculator 0-2*3*4*5*6*7*8*9*10*11*12*13*14*15*16*17*18*19*20= -2432902008176640000 30`] = `
+[
+  "start-entering",
+  0n,
+  -6227020800n,
+]
+`;
+
+exports[`FSMBuilder simple calculator 0-2*3*4*5*6*7*8*9*10*11*12*13*14*15*16*17*18*19*20= -2432902008176640000 31`] = `
+[
+  "entering",
+  0n,
+  -6227020800n,
+  1n,
+]
+`;
+
+exports[`FSMBuilder simple calculator 0-2*3*4*5*6*7*8*9*10*11*12*13*14*15*16*17*18*19*20= -2432902008176640000 32`] = `
+[
+  "entering",
+  0n,
+  -6227020800n,
+  14n,
+]
+`;
+
+exports[`FSMBuilder simple calculator 0-2*3*4*5*6*7*8*9*10*11*12*13*14*15*16*17*18*19*20= -2432902008176640000 33`] = `
+[
+  "start-entering",
+  0n,
+  -87178291200n,
+]
+`;
+
+exports[`FSMBuilder simple calculator 0-2*3*4*5*6*7*8*9*10*11*12*13*14*15*16*17*18*19*20= -2432902008176640000 34`] = `
+[
+  "entering",
+  0n,
+  -87178291200n,
+  1n,
+]
+`;
+
+exports[`FSMBuilder simple calculator 0-2*3*4*5*6*7*8*9*10*11*12*13*14*15*16*17*18*19*20= -2432902008176640000 35`] = `
+[
+  "entering",
+  0n,
+  -87178291200n,
+  15n,
+]
+`;
+
+exports[`FSMBuilder simple calculator 0-2*3*4*5*6*7*8*9*10*11*12*13*14*15*16*17*18*19*20= -2432902008176640000 36`] = `
+[
+  "start-entering",
+  0n,
+  -1307674368000n,
+]
+`;
+
+exports[`FSMBuilder simple calculator 0-2*3*4*5*6*7*8*9*10*11*12*13*14*15*16*17*18*19*20= -2432902008176640000 37`] = `
+[
+  "entering",
+  0n,
+  -1307674368000n,
+  1n,
+]
+`;
+
+exports[`FSMBuilder simple calculator 0-2*3*4*5*6*7*8*9*10*11*12*13*14*15*16*17*18*19*20= -2432902008176640000 38`] = `
+[
+  "entering",
+  0n,
+  -1307674368000n,
+  16n,
+]
+`;
+
+exports[`FSMBuilder simple calculator 0-2*3*4*5*6*7*8*9*10*11*12*13*14*15*16*17*18*19*20= -2432902008176640000 39`] = `
+[
+  "start-entering",
+  0n,
+  -20922789888000n,
+]
+`;
+
+exports[`FSMBuilder simple calculator 0-2*3*4*5*6*7*8*9*10*11*12*13*14*15*16*17*18*19*20= -2432902008176640000 40`] = `
+[
+  "entering",
+  0n,
+  -20922789888000n,
+  1n,
+]
+`;
+
+exports[`FSMBuilder simple calculator 0-2*3*4*5*6*7*8*9*10*11*12*13*14*15*16*17*18*19*20= -2432902008176640000 41`] = `
+[
+  "entering",
+  0n,
+  -20922789888000n,
+  17n,
+]
+`;
+
+exports[`FSMBuilder simple calculator 0-2*3*4*5*6*7*8*9*10*11*12*13*14*15*16*17*18*19*20= -2432902008176640000 42`] = `
+[
+  "start-entering",
+  0n,
+  -355687428096000n,
+]
+`;
+
+exports[`FSMBuilder simple calculator 0-2*3*4*5*6*7*8*9*10*11*12*13*14*15*16*17*18*19*20= -2432902008176640000 43`] = `
+[
+  "entering",
+  0n,
+  -355687428096000n,
+  1n,
+]
+`;
+
+exports[`FSMBuilder simple calculator 0-2*3*4*5*6*7*8*9*10*11*12*13*14*15*16*17*18*19*20= -2432902008176640000 44`] = `
+[
+  "entering",
+  0n,
+  -355687428096000n,
+  18n,
+]
+`;
+
+exports[`FSMBuilder simple calculator 0-2*3*4*5*6*7*8*9*10*11*12*13*14*15*16*17*18*19*20= -2432902008176640000 45`] = `
+[
+  "start-entering",
+  0n,
+  -6402373705728000n,
+]
+`;
+
+exports[`FSMBuilder simple calculator 0-2*3*4*5*6*7*8*9*10*11*12*13*14*15*16*17*18*19*20= -2432902008176640000 46`] = `
+[
+  "entering",
+  0n,
+  -6402373705728000n,
+  1n,
+]
+`;
+
+exports[`FSMBuilder simple calculator 0-2*3*4*5*6*7*8*9*10*11*12*13*14*15*16*17*18*19*20= -2432902008176640000 47`] = `
+[
+  "entering",
+  0n,
+  -6402373705728000n,
+  19n,
+]
+`;
+
+exports[`FSMBuilder simple calculator 0-2*3*4*5*6*7*8*9*10*11*12*13*14*15*16*17*18*19*20= -2432902008176640000 48`] = `
+[
+  "start-entering",
+  0n,
+  -121645100408832000n,
+]
+`;
+
+exports[`FSMBuilder simple calculator 0-2*3*4*5*6*7*8*9*10*11*12*13*14*15*16*17*18*19*20= -2432902008176640000 49`] = `
+[
+  "entering",
+  0n,
+  -121645100408832000n,
+  2n,
+]
+`;
+
+exports[`FSMBuilder simple calculator 0-2*3*4*5*6*7*8*9*10*11*12*13*14*15*16*17*18*19*20= -2432902008176640000 50`] = `
+[
+  "entering",
+  0n,
+  -121645100408832000n,
+  20n,
+]
+`;
+
+exports[`FSMBuilder simple calculator 0-2*3*4*5*6*7*8*9*10*11*12*13*14*15*16*17*18*19*20= -2432902008176640000 51`] = `
+[
+  "result",
+  -2432902008176640000n,
+]
+`;
+
+exports[`FSMBuilder simple calculator 1*2-3*4*5+6*7*8-9*10*11+12*13*14= 1472 1`] = `
+[
+  "entering",
+  0n,
+  1n,
+  1n,
+]
+`;
+
+exports[`FSMBuilder simple calculator 1*2-3*4*5+6*7*8-9*10*11+12*13*14= 1472 2`] = `
+[
+  "start-entering",
+  0n,
+  1n,
+]
+`;
+
+exports[`FSMBuilder simple calculator 1*2-3*4*5+6*7*8-9*10*11+12*13*14= 1472 3`] = `
+[
+  "entering",
+  0n,
+  1n,
+  2n,
+]
+`;
+
+exports[`FSMBuilder simple calculator 1*2-3*4*5+6*7*8-9*10*11+12*13*14= 1472 4`] = `
+[
+  "start-entering",
+  2n,
+  -1n,
+]
+`;
+
+exports[`FSMBuilder simple calculator 1*2-3*4*5+6*7*8-9*10*11+12*13*14= 1472 5`] = `
+[
+  "entering",
+  2n,
+  -1n,
+  3n,
+]
+`;
+
+exports[`FSMBuilder simple calculator 1*2-3*4*5+6*7*8-9*10*11+12*13*14= 1472 6`] = `
+[
+  "start-entering",
+  2n,
+  -3n,
+]
+`;
+
+exports[`FSMBuilder simple calculator 1*2-3*4*5+6*7*8-9*10*11+12*13*14= 1472 7`] = `
+[
+  "entering",
+  2n,
+  -3n,
+  4n,
+]
+`;
+
+exports[`FSMBuilder simple calculator 1*2-3*4*5+6*7*8-9*10*11+12*13*14= 1472 8`] = `
+[
+  "start-entering",
+  2n,
+  -12n,
+]
+`;
+
+exports[`FSMBuilder simple calculator 1*2-3*4*5+6*7*8-9*10*11+12*13*14= 1472 9`] = `
+[
+  "entering",
+  2n,
+  -12n,
+  5n,
+]
+`;
+
+exports[`FSMBuilder simple calculator 1*2-3*4*5+6*7*8-9*10*11+12*13*14= 1472 10`] = `
+[
+  "start-entering",
+  -58n,
+  1n,
+]
+`;
+
+exports[`FSMBuilder simple calculator 1*2-3*4*5+6*7*8-9*10*11+12*13*14= 1472 11`] = `
+[
+  "entering",
+  -58n,
+  1n,
+  6n,
+]
+`;
+
+exports[`FSMBuilder simple calculator 1*2-3*4*5+6*7*8-9*10*11+12*13*14= 1472 12`] = `
+[
+  "start-entering",
+  -58n,
+  6n,
+]
+`;
+
+exports[`FSMBuilder simple calculator 1*2-3*4*5+6*7*8-9*10*11+12*13*14= 1472 13`] = `
+[
+  "entering",
+  -58n,
+  6n,
+  7n,
+]
+`;
+
+exports[`FSMBuilder simple calculator 1*2-3*4*5+6*7*8-9*10*11+12*13*14= 1472 14`] = `
+[
+  "start-entering",
+  -58n,
+  42n,
+]
+`;
+
+exports[`FSMBuilder simple calculator 1*2-3*4*5+6*7*8-9*10*11+12*13*14= 1472 15`] = `
+[
+  "entering",
+  -58n,
+  42n,
+  8n,
+]
+`;
+
+exports[`FSMBuilder simple calculator 1*2-3*4*5+6*7*8-9*10*11+12*13*14= 1472 16`] = `
+[
+  "start-entering",
+  278n,
+  -1n,
+]
+`;
+
+exports[`FSMBuilder simple calculator 1*2-3*4*5+6*7*8-9*10*11+12*13*14= 1472 17`] = `
+[
+  "entering",
+  278n,
+  -1n,
+  9n,
+]
+`;
+
+exports[`FSMBuilder simple calculator 1*2-3*4*5+6*7*8-9*10*11+12*13*14= 1472 18`] = `
+[
+  "start-entering",
+  278n,
+  -9n,
+]
+`;
+
+exports[`FSMBuilder simple calculator 1*2-3*4*5+6*7*8-9*10*11+12*13*14= 1472 19`] = `
+[
+  "entering",
+  278n,
+  -9n,
+  1n,
+]
+`;
+
+exports[`FSMBuilder simple calculator 1*2-3*4*5+6*7*8-9*10*11+12*13*14= 1472 20`] = `
+[
+  "entering",
+  278n,
+  -9n,
+  10n,
+]
+`;
+
+exports[`FSMBuilder simple calculator 1*2-3*4*5+6*7*8-9*10*11+12*13*14= 1472 21`] = `
+[
+  "start-entering",
+  278n,
+  -90n,
+]
+`;
+
+exports[`FSMBuilder simple calculator 1*2-3*4*5+6*7*8-9*10*11+12*13*14= 1472 22`] = `
+[
+  "entering",
+  278n,
+  -90n,
+  1n,
+]
+`;
+
+exports[`FSMBuilder simple calculator 1*2-3*4*5+6*7*8-9*10*11+12*13*14= 1472 23`] = `
+[
+  "entering",
+  278n,
+  -90n,
+  11n,
+]
+`;
+
+exports[`FSMBuilder simple calculator 1*2-3*4*5+6*7*8-9*10*11+12*13*14= 1472 24`] = `
+[
+  "start-entering",
+  -712n,
+  1n,
+]
+`;
+
+exports[`FSMBuilder simple calculator 1*2-3*4*5+6*7*8-9*10*11+12*13*14= 1472 25`] = `
+[
+  "entering",
+  -712n,
+  1n,
+  1n,
+]
+`;
+
+exports[`FSMBuilder simple calculator 1*2-3*4*5+6*7*8-9*10*11+12*13*14= 1472 26`] = `
+[
+  "entering",
+  -712n,
+  1n,
+  12n,
+]
+`;
+
+exports[`FSMBuilder simple calculator 1*2-3*4*5+6*7*8-9*10*11+12*13*14= 1472 27`] = `
+[
+  "start-entering",
+  -712n,
+  12n,
+]
+`;
+
+exports[`FSMBuilder simple calculator 1*2-3*4*5+6*7*8-9*10*11+12*13*14= 1472 28`] = `
+[
+  "entering",
+  -712n,
+  12n,
+  1n,
+]
+`;
+
+exports[`FSMBuilder simple calculator 1*2-3*4*5+6*7*8-9*10*11+12*13*14= 1472 29`] = `
+[
+  "entering",
+  -712n,
+  12n,
+  13n,
+]
+`;
+
+exports[`FSMBuilder simple calculator 1*2-3*4*5+6*7*8-9*10*11+12*13*14= 1472 30`] = `
+[
+  "start-entering",
+  -712n,
+  156n,
+]
+`;
+
+exports[`FSMBuilder simple calculator 1*2-3*4*5+6*7*8-9*10*11+12*13*14= 1472 31`] = `
+[
+  "entering",
+  -712n,
+  156n,
+  1n,
+]
+`;
+
+exports[`FSMBuilder simple calculator 1*2-3*4*5+6*7*8-9*10*11+12*13*14= 1472 32`] = `
+[
+  "entering",
+  -712n,
+  156n,
+  14n,
+]
+`;
+
+exports[`FSMBuilder simple calculator 1*2-3*4*5+6*7*8-9*10*11+12*13*14= 1472 33`] = `
+[
+  "result",
+  1472n,
+]
+`;
+
+exports[`FSMBuilder simple calculator 1+2+3+4+5+6+7+8+9+10= 55 1`] = `
+[
+  "entering",
+  0n,
+  1n,
+  1n,
+]
+`;
+
+exports[`FSMBuilder simple calculator 1+2+3+4+5+6+7+8+9+10= 55 2`] = `
+[
+  "start-entering",
+  1n,
+  1n,
+]
+`;
+
+exports[`FSMBuilder simple calculator 1+2+3+4+5+6+7+8+9+10= 55 3`] = `
+[
+  "entering",
+  1n,
+  1n,
+  2n,
+]
+`;
+
+exports[`FSMBuilder simple calculator 1+2+3+4+5+6+7+8+9+10= 55 4`] = `
+[
+  "start-entering",
+  3n,
+  1n,
+]
+`;
+
+exports[`FSMBuilder simple calculator 1+2+3+4+5+6+7+8+9+10= 55 5`] = `
+[
+  "entering",
+  3n,
+  1n,
+  3n,
+]
+`;
+
+exports[`FSMBuilder simple calculator 1+2+3+4+5+6+7+8+9+10= 55 6`] = `
+[
+  "start-entering",
+  6n,
+  1n,
+]
+`;
+
+exports[`FSMBuilder simple calculator 1+2+3+4+5+6+7+8+9+10= 55 7`] = `
+[
+  "entering",
+  6n,
+  1n,
+  4n,
+]
+`;
+
+exports[`FSMBuilder simple calculator 1+2+3+4+5+6+7+8+9+10= 55 8`] = `
+[
+  "start-entering",
+  10n,
+  1n,
+]
+`;
+
+exports[`FSMBuilder simple calculator 1+2+3+4+5+6+7+8+9+10= 55 9`] = `
+[
+  "entering",
+  10n,
+  1n,
+  5n,
+]
+`;
+
+exports[`FSMBuilder simple calculator 1+2+3+4+5+6+7+8+9+10= 55 10`] = `
+[
+  "start-entering",
+  15n,
+  1n,
+]
+`;
+
+exports[`FSMBuilder simple calculator 1+2+3+4+5+6+7+8+9+10= 55 11`] = `
+[
+  "entering",
+  15n,
+  1n,
+  6n,
+]
+`;
+
+exports[`FSMBuilder simple calculator 1+2+3+4+5+6+7+8+9+10= 55 12`] = `
+[
+  "start-entering",
+  21n,
+  1n,
+]
+`;
+
+exports[`FSMBuilder simple calculator 1+2+3+4+5+6+7+8+9+10= 55 13`] = `
+[
+  "entering",
+  21n,
+  1n,
+  7n,
+]
+`;
+
+exports[`FSMBuilder simple calculator 1+2+3+4+5+6+7+8+9+10= 55 14`] = `
+[
+  "start-entering",
+  28n,
+  1n,
+]
+`;
+
+exports[`FSMBuilder simple calculator 1+2+3+4+5+6+7+8+9+10= 55 15`] = `
+[
+  "entering",
+  28n,
+  1n,
+  8n,
+]
+`;
+
+exports[`FSMBuilder simple calculator 1+2+3+4+5+6+7+8+9+10= 55 16`] = `
+[
+  "start-entering",
+  36n,
+  1n,
+]
+`;
+
+exports[`FSMBuilder simple calculator 1+2+3+4+5+6+7+8+9+10= 55 17`] = `
+[
+  "entering",
+  36n,
+  1n,
+  9n,
+]
+`;
+
+exports[`FSMBuilder simple calculator 1+2+3+4+5+6+7+8+9+10= 55 18`] = `
+[
+  "start-entering",
+  45n,
+  1n,
+]
+`;
+
+exports[`FSMBuilder simple calculator 1+2+3+4+5+6+7+8+9+10= 55 19`] = `
+[
+  "entering",
+  45n,
+  1n,
+  1n,
+]
+`;
+
+exports[`FSMBuilder simple calculator 1+2+3+4+5+6+7+8+9+10= 55 20`] = `
+[
+  "entering",
+  45n,
+  1n,
+  10n,
+]
+`;
+
+exports[`FSMBuilder simple calculator 1+2+3+4+5+6+7+8+9+10= 55 21`] = `
+[
+  "result",
+  55n,
+]
+`;
+
+exports[`FSMBuilder simple calculator 1+2= 3 1`] = `
+[
+  "entering",
+  0n,
+  1n,
+  1n,
+]
+`;
+
+exports[`FSMBuilder simple calculator 1+2= 3 2`] = `
+[
+  "start-entering",
+  1n,
+  1n,
+]
+`;
+
+exports[`FSMBuilder simple calculator 1+2= 3 3`] = `
+[
+  "entering",
+  1n,
+  1n,
+  2n,
+]
+`;
+
+exports[`FSMBuilder simple calculator 1+2= 3 4`] = `
+[
+  "result",
+  3n,
+]
+`;
+
+exports[`FSMBuilder simple calculator 1-2+3-4+5-6+7-8+9-10= -5 1`] = `
+[
+  "entering",
+  0n,
+  1n,
+  1n,
+]
+`;
+
+exports[`FSMBuilder simple calculator 1-2+3-4+5-6+7-8+9-10= -5 2`] = `
+[
+  "start-entering",
+  1n,
+  -1n,
+]
+`;
+
+exports[`FSMBuilder simple calculator 1-2+3-4+5-6+7-8+9-10= -5 3`] = `
+[
+  "entering",
+  1n,
+  -1n,
+  2n,
+]
+`;
+
+exports[`FSMBuilder simple calculator 1-2+3-4+5-6+7-8+9-10= -5 4`] = `
+[
+  "start-entering",
+  -1n,
+  1n,
+]
+`;
+
+exports[`FSMBuilder simple calculator 1-2+3-4+5-6+7-8+9-10= -5 5`] = `
+[
+  "entering",
+  -1n,
+  1n,
+  3n,
+]
+`;
+
+exports[`FSMBuilder simple calculator 1-2+3-4+5-6+7-8+9-10= -5 6`] = `
+[
+  "start-entering",
+  2n,
+  -1n,
+]
+`;
+
+exports[`FSMBuilder simple calculator 1-2+3-4+5-6+7-8+9-10= -5 7`] = `
+[
+  "entering",
+  2n,
+  -1n,
+  4n,
+]
+`;
+
+exports[`FSMBuilder simple calculator 1-2+3-4+5-6+7-8+9-10= -5 8`] = `
+[
+  "start-entering",
+  -2n,
+  1n,
+]
+`;
+
+exports[`FSMBuilder simple calculator 1-2+3-4+5-6+7-8+9-10= -5 9`] = `
+[
+  "entering",
+  -2n,
+  1n,
+  5n,
+]
+`;
+
+exports[`FSMBuilder simple calculator 1-2+3-4+5-6+7-8+9-10= -5 10`] = `
+[
+  "start-entering",
+  3n,
+  -1n,
+]
+`;
+
+exports[`FSMBuilder simple calculator 1-2+3-4+5-6+7-8+9-10= -5 11`] = `
+[
+  "entering",
+  3n,
+  -1n,
+  6n,
+]
+`;
+
+exports[`FSMBuilder simple calculator 1-2+3-4+5-6+7-8+9-10= -5 12`] = `
+[
+  "start-entering",
+  -3n,
+  1n,
+]
+`;
+
+exports[`FSMBuilder simple calculator 1-2+3-4+5-6+7-8+9-10= -5 13`] = `
+[
+  "entering",
+  -3n,
+  1n,
+  7n,
+]
+`;
+
+exports[`FSMBuilder simple calculator 1-2+3-4+5-6+7-8+9-10= -5 14`] = `
+[
+  "start-entering",
+  4n,
+  -1n,
+]
+`;
+
+exports[`FSMBuilder simple calculator 1-2+3-4+5-6+7-8+9-10= -5 15`] = `
+[
+  "entering",
+  4n,
+  -1n,
+  8n,
+]
+`;
+
+exports[`FSMBuilder simple calculator 1-2+3-4+5-6+7-8+9-10= -5 16`] = `
+[
+  "start-entering",
+  -4n,
+  1n,
+]
+`;
+
+exports[`FSMBuilder simple calculator 1-2+3-4+5-6+7-8+9-10= -5 17`] = `
+[
+  "entering",
+  -4n,
+  1n,
+  9n,
+]
+`;
+
+exports[`FSMBuilder simple calculator 1-2+3-4+5-6+7-8+9-10= -5 18`] = `
+[
+  "start-entering",
+  5n,
+  -1n,
+]
+`;
+
+exports[`FSMBuilder simple calculator 1-2+3-4+5-6+7-8+9-10= -5 19`] = `
+[
+  "entering",
+  5n,
+  -1n,
+  1n,
+]
+`;
+
+exports[`FSMBuilder simple calculator 1-2+3-4+5-6+7-8+9-10= -5 20`] = `
+[
+  "entering",
+  5n,
+  -1n,
+  10n,
+]
+`;
+
+exports[`FSMBuilder simple calculator 1-2+3-4+5-6+7-8+9-10= -5 21`] = `
+[
+  "result",
+  -5n,
+]
+`;
+
+exports[`FSMBuilder simple calculator 69-420= -351 1`] = `
+[
+  "entering",
+  0n,
+  1n,
+  6n,
+]
+`;
+
+exports[`FSMBuilder simple calculator 69-420= -351 2`] = `
+[
+  "entering",
+  0n,
+  1n,
+  69n,
+]
+`;
+
+exports[`FSMBuilder simple calculator 69-420= -351 3`] = `
+[
+  "start-entering",
+  69n,
+  -1n,
+]
+`;
+
+exports[`FSMBuilder simple calculator 69-420= -351 4`] = `
+[
+  "entering",
+  69n,
+  -1n,
+  4n,
+]
+`;
+
+exports[`FSMBuilder simple calculator 69-420= -351 5`] = `
+[
+  "entering",
+  69n,
+  -1n,
+  42n,
+]
+`;
+
+exports[`FSMBuilder simple calculator 69-420= -351 6`] = `
+[
+  "entering",
+  69n,
+  -1n,
+  420n,
+]
+`;
+
+exports[`FSMBuilder simple calculator 69-420= -351 7`] = `
+[
+  "result",
+  -351n,
+]
+`;
+
+exports[`FSMBuilder simple calculator 314+15-9*2*653-58*979= -68207 1`] = `
+[
+  "entering",
+  0n,
+  1n,
+  3n,
+]
+`;
+
+exports[`FSMBuilder simple calculator 314+15-9*2*653-58*979= -68207 2`] = `
+[
+  "entering",
+  0n,
+  1n,
+  31n,
+]
+`;
+
+exports[`FSMBuilder simple calculator 314+15-9*2*653-58*979= -68207 3`] = `
+[
+  "entering",
+  0n,
+  1n,
+  314n,
+]
+`;
+
+exports[`FSMBuilder simple calculator 314+15-9*2*653-58*979= -68207 4`] = `
+[
+  "start-entering",
+  314n,
+  1n,
+]
+`;
+
+exports[`FSMBuilder simple calculator 314+15-9*2*653-58*979= -68207 5`] = `
+[
+  "entering",
+  314n,
+  1n,
+  1n,
+]
+`;
+
+exports[`FSMBuilder simple calculator 314+15-9*2*653-58*979= -68207 6`] = `
+[
+  "entering",
+  314n,
+  1n,
+  15n,
+]
+`;
+
+exports[`FSMBuilder simple calculator 314+15-9*2*653-58*979= -68207 7`] = `
+[
+  "start-entering",
+  329n,
+  -1n,
+]
+`;
+
+exports[`FSMBuilder simple calculator 314+15-9*2*653-58*979= -68207 8`] = `
+[
+  "entering",
+  329n,
+  -1n,
+  9n,
+]
+`;
+
+exports[`FSMBuilder simple calculator 314+15-9*2*653-58*979= -68207 9`] = `
+[
+  "start-entering",
+  329n,
+  -9n,
+]
+`;
+
+exports[`FSMBuilder simple calculator 314+15-9*2*653-58*979= -68207 10`] = `
+[
+  "entering",
+  329n,
+  -9n,
+  2n,
+]
+`;
+
+exports[`FSMBuilder simple calculator 314+15-9*2*653-58*979= -68207 11`] = `
+[
+  "start-entering",
+  329n,
+  -18n,
+]
+`;
+
+exports[`FSMBuilder simple calculator 314+15-9*2*653-58*979= -68207 12`] = `
+[
+  "entering",
+  329n,
+  -18n,
+  6n,
+]
+`;
+
+exports[`FSMBuilder simple calculator 314+15-9*2*653-58*979= -68207 13`] = `
+[
+  "entering",
+  329n,
+  -18n,
+  65n,
+]
+`;
+
+exports[`FSMBuilder simple calculator 314+15-9*2*653-58*979= -68207 14`] = `
+[
+  "entering",
+  329n,
+  -18n,
+  653n,
+]
+`;
+
+exports[`FSMBuilder simple calculator 314+15-9*2*653-58*979= -68207 15`] = `
+[
+  "start-entering",
+  -11425n,
+  -1n,
+]
+`;
+
+exports[`FSMBuilder simple calculator 314+15-9*2*653-58*979= -68207 16`] = `
+[
+  "entering",
+  -11425n,
+  -1n,
+  5n,
+]
+`;
+
+exports[`FSMBuilder simple calculator 314+15-9*2*653-58*979= -68207 17`] = `
+[
+  "entering",
+  -11425n,
+  -1n,
+  58n,
+]
+`;
+
+exports[`FSMBuilder simple calculator 314+15-9*2*653-58*979= -68207 18`] = `
+[
+  "start-entering",
+  -11425n,
+  -58n,
+]
+`;
+
+exports[`FSMBuilder simple calculator 314+15-9*2*653-58*979= -68207 19`] = `
+[
+  "entering",
+  -11425n,
+  -58n,
+  9n,
+]
+`;
+
+exports[`FSMBuilder simple calculator 314+15-9*2*653-58*979= -68207 20`] = `
+[
+  "entering",
+  -11425n,
+  -58n,
+  97n,
+]
+`;
+
+exports[`FSMBuilder simple calculator 314+15-9*2*653-58*979= -68207 21`] = `
+[
+  "entering",
+  -11425n,
+  -58n,
+  979n,
+]
+`;
+
+exports[`FSMBuilder simple calculator 314+15-9*2*653-58*979= -68207 22`] = `
+[
+  "result",
+  -68207n,
+]
+`;
+
+exports[`FSMBuilder simple calculator 314159265358979= 314159265358979 1`] = `
+[
+  "entering",
+  0n,
+  1n,
+  3n,
+]
+`;
+
+exports[`FSMBuilder simple calculator 314159265358979= 314159265358979 2`] = `
+[
+  "entering",
+  0n,
+  1n,
+  31n,
+]
+`;
+
+exports[`FSMBuilder simple calculator 314159265358979= 314159265358979 3`] = `
+[
+  "entering",
+  0n,
+  1n,
+  314n,
+]
+`;
+
+exports[`FSMBuilder simple calculator 314159265358979= 314159265358979 4`] = `
+[
+  "entering",
+  0n,
+  1n,
+  3141n,
+]
+`;
+
+exports[`FSMBuilder simple calculator 314159265358979= 314159265358979 5`] = `
+[
+  "entering",
+  0n,
+  1n,
+  31415n,
+]
+`;
+
+exports[`FSMBuilder simple calculator 314159265358979= 314159265358979 6`] = `
+[
+  "entering",
+  0n,
+  1n,
+  314159n,
+]
+`;
+
+exports[`FSMBuilder simple calculator 314159265358979= 314159265358979 7`] = `
+[
+  "entering",
+  0n,
+  1n,
+  3141592n,
+]
+`;
+
+exports[`FSMBuilder simple calculator 314159265358979= 314159265358979 8`] = `
+[
+  "entering",
+  0n,
+  1n,
+  31415926n,
+]
+`;
+
+exports[`FSMBuilder simple calculator 314159265358979= 314159265358979 9`] = `
+[
+  "entering",
+  0n,
+  1n,
+  314159265n,
+]
+`;
+
+exports[`FSMBuilder simple calculator 314159265358979= 314159265358979 10`] = `
+[
+  "entering",
+  0n,
+  1n,
+  3141592653n,
+]
+`;
+
+exports[`FSMBuilder simple calculator 314159265358979= 314159265358979 11`] = `
+[
+  "entering",
+  0n,
+  1n,
+  31415926535n,
+]
+`;
+
+exports[`FSMBuilder simple calculator 314159265358979= 314159265358979 12`] = `
+[
+  "entering",
+  0n,
+  1n,
+  314159265358n,
+]
+`;
+
+exports[`FSMBuilder simple calculator 314159265358979= 314159265358979 13`] = `
+[
+  "entering",
+  0n,
+  1n,
+  3141592653589n,
+]
+`;
+
+exports[`FSMBuilder simple calculator 314159265358979= 314159265358979 14`] = `
+[
+  "entering",
+  0n,
+  1n,
+  31415926535897n,
+]
+`;
+
+exports[`FSMBuilder simple calculator 314159265358979= 314159265358979 15`] = `
+[
+  "entering",
+  0n,
+  1n,
+  314159265358979n,
+]
+`;
+
+exports[`FSMBuilder simple calculator 314159265358979= 314159265358979 16`] = `
+[
+  "result",
+  314159265358979n,
+]
+`;
