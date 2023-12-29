@@ -51,37 +51,72 @@ export type FSMStates<FTT extends AnyTransitionTable> = FTT extends TransitionTa
 export type FSMEvents<FTT extends AnyTransitionTable> = FTT extends TransitionTable<infer _S, infer E> ? E : never;
 export type AnyStateDataTuple<FTT extends AnyTransitionTable> = StateDataTuple<FSMStates<FTT>, keyof FSMStates<FTT>>;
 export type AnyEventDataTuple<FTT extends AnyTransitionTable> = EventDataTuple<FSMEvents<FTT>, keyof FSMEvents<FTT>>;
-//
-// export class FSM<FTT extends AnyTransitionTable> {
-//     constructor(
-//         readonly transitionTable: FTT,
-//         readonly stateData: AnyStateDataTuple<FTT>
-//     ) {}
-//
-//     create<FTT extends AnyTransitionTable>(
-//         transitionTable: FTT,
-//         ...initialStateData: AnyStateDataTuple<FTT>
-//     ): FSM<FTT> {
-//         return new FSM(transitionTable, initialStateData);
-//     }
-//
-//     async dispatch(
-//         ...params: [
-//             ...AnyEventDataTuple<FTT>,
-//             options?: {
-//                 ignoreInvalidTransition?: boolean;
-//             },
-//         ]
-//     ): FSM<FTT> {
-//         const [...eventData, options] = params;
-//         const { ignoreInvalidTransition = false } = options ?? {};
-//         let curState = this.stateData;
-//
-//         const transitionData = this.transitionTable[curState[0]].transitions;
-//
-//         return new FSM(this.transitionTable, curState);
-//     }
-// }
+
+export type FSMDispatchResult<FTT extends AnyTransitionTable> = {
+    eventsFired: { targetState: AnyStateDataTuple<FTT>; event: AnyEventDataTuple<FTT> }[];
+    interruptedEvent?: AnyEventDataTuple<FTT> | undefined;
+};
+
+export class FSM<FTT extends AnyTransitionTable> {
+    constructor(
+        readonly transitionTable: FTT,
+        public stateData: AnyStateDataTuple<FTT>
+    ) {}
+
+    static create<FTT extends AnyTransitionTable>(
+        transitionTable: FTT,
+        ...initialStateData: AnyStateDataTuple<FTT>
+    ): FSM<FTT> {
+        return new FSM(transitionTable, initialStateData);
+    }
+
+    clone(): FSM<FTT> {
+        return new FSM(this.transitionTable, this.stateData);
+    }
+
+    async dispatch(...event: AnyEventDataTuple<FTT>) {
+        return this.fullDispatch(event, { ignoreInvalidTransition: false });
+    }
+
+    async dispatchIgnoreInvalidTransition(...event: AnyEventDataTuple<FTT>) {
+        return this.fullDispatch(event, { ignoreInvalidTransition: true });
+    }
+
+    async fullDispatch(
+        event: AnyEventDataTuple<FTT>,
+        options?: {
+            ignoreInvalidTransition?: boolean;
+        }
+    ): Promise<FSMDispatchResult<FTT>> {
+        const { ignoreInvalidTransition = false } = options ?? {};
+        const eventsFired: FSMDispatchResult<FTT>['eventsFired'] = [];
+
+        const [eventName, ...eventData] = event;
+        const [curStateName, ...curStateData] = this.stateData;
+        const transitionData = this.transitionTable[curStateName].transitions[eventName];
+        if (transitionData === undefined) {
+            if (ignoreInvalidTransition) {
+                // TODO additional data
+                throw new Error(
+                    `No transition from state ${String(this.stateData[0])} when event ${String(event[0])} is fired`
+                );
+            } else {
+                return {
+                    eventsFired,
+                    interruptedEvent: event,
+                };
+            }
+        }
+
+        const newData = await transitionData.transitionHandler(curStateData, eventData);
+        this.stateData = [transitionData.target, ...newData] as AnyStateDataTuple<FTT>;
+        // TODO redirect event here.
+        await this.transitionTable[this.stateData[0]].enterHandler(...newData);
+        eventsFired.push({ targetState: this.stateData, event });
+
+        return { eventsFired };
+    }
+}
 
 type IsRedirectable<
     States extends StateDataMap,
