@@ -96,10 +96,12 @@ export class FSM<S extends StateDataMap, E extends EventDataMap> {
         const [curStateName, ...curStateData] = this.stateData;
         const transitionData = this.transitionTable[curStateName].transitions[eventName];
         if (transitionData === undefined) {
-            if (ignoreInvalidTransition) {
+            if (!ignoreInvalidTransition) {
                 // TODO additional data
                 throw new Error(
-                    `No transition from state ${String(this.stateData[0])} when event ${String(event[0])} is fired`
+                    `No transition from state ${JSON.stringify(String(this.stateData[0]))} when event ${JSON.stringify(
+                        String(event[0])
+                    )} is fired`
                 );
             } else {
                 return {
@@ -109,7 +111,7 @@ export class FSM<S extends StateDataMap, E extends EventDataMap> {
             }
         }
 
-        const newData = await transitionData.transitionHandler(curStateData, eventData);
+        const newData = await transitionData.transitionHandler(...curStateData, ...eventData);
         this.stateData = [transitionData.target, ...newData] as StateDataTuple<S>;
         // TODO redirect event here.
         await this.transitionTable[this.stateData[0]].enterHandler(...newData);
@@ -152,6 +154,11 @@ export class FSMBuilder<S extends StateDataMap, E extends EventDataMap> {
     addState<const StateName extends KeyType, StateData extends unknown[]>(
         stateName: StateName,
         enterHandler: EnterHandlerFunction<StateData>
+    ): FSMBuilder<AddProp<S, StateName, StateData>, E>;
+    addState<const StateName extends KeyType>(stateName: StateName): FSMBuilder<AddProp<S, StateName, []>, E>;
+    addState<const StateName extends KeyType, StateData extends unknown[]>(
+        stateName: StateName,
+        enterHandler: EnterHandlerFunction<StateData> = () => {}
     ): FSMBuilder<AddProp<S, StateName, StateData>, E> {
         const res = this as unknown as FSMBuilder<S & Record<StateName, StateData>, E>;
         res.transitionTable[stateName] = {
