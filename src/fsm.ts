@@ -36,7 +36,7 @@ export type Transition<
           transitionHandler: (
               this: void,
               ...params: [...States[SourceStateName], ...Events[EventName]]
-          ) => Promise<States[TargetStateName]>;
+          ) => Promisable<States[TargetStateName]>;
       }
     : never;
 
