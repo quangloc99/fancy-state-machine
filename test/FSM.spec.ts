@@ -73,8 +73,10 @@ describe(FSMBuilder, () => {
             .addState('locked')
             .addState('unlocked')
             .addTransition('locked', 'coin', 'unlocked')
-            .addTransition('unlocked', 'push', 'locked');
-
+            .addTransition('unlocked', 'push', 'locked')
+            .setOptions({
+                ignoreInvalidTransition: true,
+            });
         type Testcase = {
             initState: 'locked' | 'unlocked';
             events: ('coin' | 'push')[];
@@ -108,7 +110,7 @@ describe(FSMBuilder, () => {
             async ({ initState, events, stateAfterEach }) => {
                 const fsm = fsmBuilder.build(initState);
                 for (let i = 0; i < events.length; ++i) {
-                    await fsm.dispatchIgnoreInvalidTransition(events[i]);
+                    await fsm.dispatch(events[i]);
                     expect(fsm.stateData).toEqual([stateAfterEach[i]]);
                 }
             }
@@ -137,8 +139,10 @@ describe(FSMBuilder, () => {
             ])
             .addTransition('processing', 'not-enough-amount', 'locked')
             .addTransition('processing', 'enough-amount', 'unlocked')
-            .addTransition('unlocked', 'push', 'locked', () => [0]);
-
+            .addTransition('unlocked', 'push', 'locked', () => [0])
+            .setOptions({
+                ignoreInvalidTransition: true,
+            });
         type TestCase = {
             events: ('push' | number)[];
             stateAfterEach: (keyof FSMStates<typeof fsmBuilder>)[];
@@ -219,13 +223,11 @@ describe(FSMBuilder, () => {
             for (const e of events) {
                 if (typeof e === 'number') {
                     await fsm.fullDispatch(['coin', e], {
-                        ignoreInvalidTransition: true,
                         onTransition,
                         onInvalidTransition,
                     });
                 } else {
                     await fsm.fullDispatch([e], {
-                        ignoreInvalidTransition: true,
                         onTransition,
                         onInvalidTransition,
                     });
