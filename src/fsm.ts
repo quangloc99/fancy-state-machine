@@ -179,11 +179,7 @@ type IsRedirectable<
     SourceStateName extends keyof States,
     TargetStateName extends keyof States,
     EventName extends keyof Events,
-> = ((...params: States[TargetStateName]) => void) extends (
-    ...params: [...States[SourceStateName], ...Events[EventName]]
-) => void
-    ? true
-    : false;
+> = States[TargetStateName] extends [...States[SourceStateName], ...Events[EventName]] ? true : false;
 
 export class FSMBuilder<S extends StateDataMap, E extends EventDataMap> {
     constructor(public transitionTable: TransitionTable<S, E>) {}

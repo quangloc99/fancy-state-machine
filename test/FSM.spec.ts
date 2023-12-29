@@ -137,7 +137,7 @@ describe(FSMBuilder, () => {
                 currentAmount + additionalAmount,
             ])
             .addTransition('processing', 'not-enough-amount', 'locked')
-            .addTransition('processing', 'enough-amount', 'unlocked')
+            .addTransition('processing', 'enough-amount', 'unlocked', () => [])
             .addTransition('unlocked', 'push', 'locked', () => [0]);
 
         const initialFsm = fsmBuilder.build('locked', 0).setOptions({
@@ -491,7 +491,7 @@ describe(FSMBuilder, () => {
             .addTransition('second-digit.fail', 'redirect', 'fail')
             .addTransition('third-digit.fail', 'redirect', 'fail')
             .addTransition('forth-digit.fail', 'redirect', 'fail')
-            .addTransition('fail', 'digit', 'fail');
+            .addTransition('fail', 'digit', 'fail', () => []);
         const initialFsm = fsmBuilder.build('start');
 
         beforeAll(async () => {
