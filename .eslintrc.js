@@ -26,5 +26,12 @@ module.exports = {
         semi: ['error', 'always'],
         'spaced-comment': ['error', 'always', { exceptions: ['-', '+'] }],
         'unused-imports/no-unused-imports': 'error',
+        '@typescript-eslint/no-unused-vars': [
+            'error',
+            {
+                argsIgnorePattern: '^_',
+                varsIgnorePattern: '^_',
+            },
+        ],
     },
 };
