@@ -1,11 +1,10 @@
+import { Promisable, Constructor, Simplify } from 'type-fest';
+
 type KeyType = string | symbol | number;
 
 type EmptyObject = Record<never, never>;
-// eslint-disable-next-line @typescript-eslint/ban-types
-type Simplify<Obj extends object> = { [key in keyof Obj]: Obj[key] } & {};
 type AddProp<Obj extends object, PropName extends KeyType, Value> = Simplify<Obj & Record<PropName, Value>>;
 type If<Cond extends boolean, IfTrueType, IfFalseType> = Cond extends true ? IfTrueType : IfFalseType;
-type Promisable<T> = T | PromiseLike<T>;
 
 export type EnterHandlerFunction<Params extends unknown[] = unknown[]> = (
     this: void,
@@ -58,6 +57,15 @@ export type FSMDispatchResult<S extends StateDataMap, E extends EventDataMap> = 
     interruptedEvent?: EventDataTuple<E> | undefined;
 };
 
+export class InvalidTransitionEventCause<S extends StateDataMap, E extends EventDataMap> {
+    constructor(
+        readonly fromState: StateDataTuple<S>,
+        readonly event: EventDataTuple<E>
+    ) {}
+}
+
+type AllCauses<S extends StateDataMap, E extends EventDataMap> = InvalidTransitionEventCause<S, E>;
+
 export class FSM<S extends StateDataMap, E extends EventDataMap> {
     constructor(
         readonly transitionTable: TransitionTable<S, E>,
@@ -101,7 +109,8 @@ export class FSM<S extends StateDataMap, E extends EventDataMap> {
                 throw new Error(
                     `No transition from state ${JSON.stringify(String(this.stateData[0]))} when event ${JSON.stringify(
                         String(event[0])
-                    )} is fired`
+                    )} is fired`,
+                    { cause: new InvalidTransitionEventCause<S, E>(this.stateData, event) }
                 );
             } else {
                 return {
@@ -118,6 +127,11 @@ export class FSM<S extends StateDataMap, E extends EventDataMap> {
         eventsFired.push({ targetState: this.stateData, event });
 
         return { eventsFired };
+    }
+
+    getErrorCause<Cause extends AllCauses<S, E>>(e: unknown, causeClass: Constructor<Cause>): Cause | undefined {
+        if (!(e instanceof Error)) return undefined;
+        if (e.cause instanceof causeClass) return e.cause;
     }
 }
 
@@ -212,3 +226,13 @@ export class FSMBuilder<S extends StateDataMap, E extends EventDataMap> {
         return FSM.create(this.transitionTable, ...initialStateData);
     }
 }
+
+export type FSMFromBuilder<Builder> = Builder extends FSMBuilder<infer S, infer F> ? FSM<S, F> : never;
+
+export type FSMStates<T> =
+    | (T extends FSMBuilder<infer S, infer _F> ? S : never)
+    | (T extends FSM<infer S, infer _F> ? S : never);
+
+export type FSMEvents<T> =
+    | (T extends FSMBuilder<infer _S, infer F> ? F : never)
+    | (T extends FSM<infer _S, infer F> ? F : never);
