@@ -74,11 +74,19 @@ export class FSM<S extends StateDataMap, E extends EventDataMap> {
     constructor(
         readonly transitionTable: TransitionTable<S, E>,
         public stateData: StateDataTuple<S>,
-        readonly options: FSMOptions
+        readonly options: FSMOptions = { ...DEFAULT_FSM_OPTIONS }
     ) {}
 
     clone(): FSM<S, E> {
-        return new FSM(this.transitionTable, this.stateData, this.options);
+        return new FSM(this.transitionTable, structuredClone(this.stateData), structuredClone(this.options));
+    }
+
+    setOptions(opts: Partial<FSMOptions>): this {
+        for (const [key, val] of Object.entries(opts)) {
+            if (val == undefined) continue;
+            this.options[key as keyof FSMOptions] = val;
+        }
+        return this;
     }
 
     async dispatch(...event: EventDataTuple<E>) {
@@ -151,10 +159,7 @@ type IsRedirectable<
     : false;
 
 export class FSMBuilder<S extends StateDataMap, E extends EventDataMap> {
-    constructor(
-        readonly transitionTable: TransitionTable<S, E>,
-        readonly options: FSMOptions = { ...DEFAULT_FSM_OPTIONS }
-    ) {}
+    constructor(readonly transitionTable: TransitionTable<S, E>) {}
 
     static create(): FSMBuilder<EmptyObject, EmptyObject> {
         return new FSMBuilder({});
@@ -228,16 +233,8 @@ export class FSMBuilder<S extends StateDataMap, E extends EventDataMap> {
         return this;
     }
 
-    setOptions(opts: Partial<FSMOptions>): this {
-        for (const [key, val] of Object.entries(opts)) {
-            if (val == undefined) continue;
-            this.options[key as keyof FSMOptions] = val;
-        }
-        return this;
-    }
-
     build(...initialStateData: StateDataTuple<S>): FSM<S, E> {
-        return new FSM(this.transitionTable, initialStateData, this.options);
+        return new FSM(this.transitionTable, initialStateData);
     }
 }
 

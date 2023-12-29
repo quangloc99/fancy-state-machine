@@ -73,10 +73,7 @@ describe(FSMBuilder, () => {
             .addState('locked')
             .addState('unlocked')
             .addTransition('locked', 'coin', 'unlocked')
-            .addTransition('unlocked', 'push', 'locked')
-            .setOptions({
-                ignoreInvalidTransition: true,
-            });
+            .addTransition('unlocked', 'push', 'locked');
         type Testcase = {
             initState: 'locked' | 'unlocked';
             events: ('coin' | 'push')[];
@@ -108,7 +105,9 @@ describe(FSMBuilder, () => {
         test.each(testCases)(
             'Test with init state = $initState, events = $events',
             async ({ initState, events, stateAfterEach }) => {
-                const fsm = fsmBuilder.build(initState);
+                const fsm = fsmBuilder.build(initState).setOptions({
+                    ignoreInvalidTransition: true,
+                });
                 for (let i = 0; i < events.length; ++i) {
                     await fsm.dispatch(events[i]);
                     expect(fsm.stateData).toEqual([stateAfterEach[i]]);
@@ -139,10 +138,11 @@ describe(FSMBuilder, () => {
             ])
             .addTransition('processing', 'not-enough-amount', 'locked')
             .addTransition('processing', 'enough-amount', 'unlocked')
-            .addTransition('unlocked', 'push', 'locked', () => [0])
-            .setOptions({
-                ignoreInvalidTransition: true,
-            });
+            .addTransition('unlocked', 'push', 'locked', () => [0]);
+
+        const initialFsm = fsmBuilder.build('locked', 0).setOptions({
+            ignoreInvalidTransition: true,
+        });
         type TestCase = {
             events: ('push' | number)[];
             stateAfterEach: (keyof FSMStates<typeof fsmBuilder>)[];
@@ -213,7 +213,7 @@ describe(FSMBuilder, () => {
         ];
 
         test.each(testcases)('Test with events: $events', async ({ events, stateAfterEach, allEvents }) => {
-            const fsm = fsmBuilder.build('locked', 0);
+            const fsm = initialFsm.clone();
             const actualStates: (keyof FSMStates<typeof fsmBuilder>)[] = [];
             const actualEvents: (keyof FSMEvents<typeof fsmBuilder>)[] = [];
             const onTransition: OnTransitionCallback<typeof fsm> = (_src, evt, _dst) => actualEvents.push(evt[0]);
