@@ -1,4 +1,4 @@
-import { FSMBuilder } from '../src/index.js';
+import { FSMBuilder, InvalidTransitionEventCause, FSMStates, FSMEvents, FSMFromBuilder } from '../src/index.js';
 
 describe(FSMBuilder, () => {
     describe('simple trafic light', () => {
@@ -208,31 +208,114 @@ describe(FSMBuilder, () => {
             },
         ];
 
+        async function evaluateSingleChar(fsm: FSMFromBuilder<typeof fsmBuilder>, ch: string) {
+            switch (ch) {
+                case '+':
+                    await fsm.dispatch('+');
+                    break;
+                case '-':
+                    await fsm.dispatch('-');
+                    break;
+                case '*':
+                    await fsm.dispatch('*');
+                    break;
+                case '=':
+                    await fsm.dispatch('=');
+                    break;
+                default:
+                    if (ch < '0' || ch > '9') {
+                        throw new Error('Invalid digit');
+                    }
+                    await fsm.dispatch('digit', parseInt(ch) as 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9);
+            }
+        }
+
         test.each(testcases)('$sequence $result', async ({ sequence, result }) => {
             const fsm = fsmBuilder.build('start-entering', 0n, 1n);
             for (const ch of sequence) {
-                switch (ch) {
-                    case '+':
-                        await fsm.dispatch('+');
-                        break;
-                    case '-':
-                        await fsm.dispatch('-');
-                        break;
-                    case '*':
-                        await fsm.dispatch('*');
-                        break;
-                    case '=':
-                        await fsm.dispatch('=');
-                        break;
-                    default:
-                        if (ch < '0' || ch > '9') {
-                            throw new Error('Invalid digit');
-                        }
-                        await fsm.dispatch('digit', parseInt(ch) as 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9);
-                }
+                await evaluateSingleChar(fsm, ch);
                 expect(fsm.stateData).toMatchSnapshot();
             }
             expect(fsm.stateData).toEqual(['result', result]);
         });
+
+        type FailTestCase = {
+            sequence: string;
+            sourceState: keyof FSMStates<typeof fsmBuilder>;
+            event: keyof FSMEvents<typeof fsmBuilder>;
+        };
+        const failTestCases: FailTestCase[] = [
+            {
+                sequence: '1=1',
+                sourceState: 'result',
+                event: 'digit',
+            },
+            {
+                sequence: '1==1',
+                sourceState: 'result',
+                event: '=',
+            },
+            {
+                sequence: '0=+',
+                sourceState: 'result',
+                event: '+',
+            },
+            {
+                sequence: '0=-',
+                sourceState: 'result',
+                event: '-',
+            },
+            {
+                sequence: '0=*',
+                sourceState: 'result',
+                event: '*',
+            },
+            {
+                sequence: '1++',
+                sourceState: 'start-entering',
+                event: '+',
+            },
+            {
+                sequence: '2--',
+                sourceState: 'start-entering',
+                event: '-',
+            },
+            {
+                sequence: '*',
+                sourceState: 'start-entering',
+                event: '*',
+            },
+            {
+                sequence: '1*-1=',
+                sourceState: 'start-entering',
+                event: '-',
+            },
+            {
+                sequence: '1+=1',
+                sourceState: 'start-entering',
+                event: '=',
+            },
+        ];
+
+        test.each(failTestCases)(
+            'Fail test: $sequence (error on state "$sourceState" when "$event" is fired)',
+            async ({ sequence, sourceState, event }) => {
+                const fsm = fsmBuilder.build('start-entering', 0n, 1n);
+                let err: unknown = undefined;
+
+                try {
+                    for (const ch of sequence) {
+                        await evaluateSingleChar(fsm, ch);
+                    }
+                } catch (e) {
+                    err = e;
+                }
+
+                const errorCause = fsm.getErrorCause(err, InvalidTransitionEventCause);
+                expect(errorCause).toBeDefined();
+                expect(errorCause?.fromState[0]).toBe(sourceState);
+                expect(errorCause?.event[0]).toBe(event);
+            }
+        );
     });
 });
