@@ -6,17 +6,26 @@ type EmptyObject = Record<never, never>;
 type AddProp<Obj extends object, PropName extends KeyType, Value> = Simplify<Obj & Record<PropName, Value>>;
 type If<Cond extends boolean, IfTrueType, IfFalseType> = Cond extends true ? IfTrueType : IfFalseType;
 
-export type EnterHandlerFunction<Params extends unknown[] = unknown[]> = (
-    this: void,
-    ...params: Params
-) => Promisable<void>;
-
 export type StateDataMap = Record</* StateName */ KeyType, /* Data */ unknown[]>;
 export type EventDataMap = Record</* EventName */ KeyType, /* Data */ unknown[]>;
 
+export type StateDataTuple<
+    States extends StateDataMap,
+    StateName extends keyof States = keyof States,
+> = StateName extends unknown ? [StateName, ...States[StateName]] : never;
+export type EventDataTuple<
+    Events extends EventDataMap,
+    EventName extends keyof Events = keyof Events,
+> = EventName extends unknown ? [EventName, ...Events[EventName]] : never;
+
+export type EnterHandlerFunction<E extends EventDataMap, Params extends unknown[] = unknown[]> = (
+    this: void,
+    ...params: Params
+) => Promisable<void | undefined | null | EventDataTuple<E>>;
+
 export type TransitionTable<States extends StateDataMap, Events extends EventDataMap> = {
     [SourceStateName in keyof States]: {
-        enterHandler: EnterHandlerFunction<States[SourceStateName]>;
+        enterHandler: EnterHandlerFunction<Events, States[SourceStateName]>;
         transitions: {
             [EventName in keyof Events]?: Transition<States, Events, SourceStateName, keyof States, EventName>;
         };
@@ -40,14 +49,6 @@ export type Transition<
     : never;
 
 export type AnyTransitionTable = TransitionTable<StateDataMap, EventDataMap>;
-export type StateDataTuple<
-    States extends StateDataMap,
-    StateName extends keyof States = keyof States,
-> = StateName extends unknown ? [StateName, ...States[StateName]] : never;
-export type EventDataTuple<
-    Events extends EventDataMap,
-    EventName extends keyof Events = keyof Events,
-> = EventName extends unknown ? [EventName, ...Events[EventName]] : never;
 
 export type FSMDispatchResult<S extends StateDataMap, E extends EventDataMap> = {
     eventsFired: {
@@ -167,14 +168,14 @@ export class FSMBuilder<S extends StateDataMap, E extends EventDataMap> {
 
     addState<const StateName extends KeyType, StateData extends unknown[]>(
         stateName: StateName,
-        enterHandler: EnterHandlerFunction<StateData>
+        enterHandler: EnterHandlerFunction<E, StateData>
     ): FSMBuilder<AddProp<S, StateName, StateData>, E>;
     addState<const StateName extends KeyType, StateData extends unknown[] = []>(
         stateName: StateName
     ): FSMBuilder<AddProp<S, StateName, StateData>, E>;
     addState<const StateName extends KeyType, StateData extends unknown[]>(
         stateName: StateName,
-        enterHandler: EnterHandlerFunction<StateData> = () => {}
+        enterHandler: EnterHandlerFunction<E, StateData> = () => {}
     ): FSMBuilder<AddProp<S, StateName, StateData>, E> {
         const res = this as unknown as FSMBuilder<S & Record<StateName, StateData>, E>;
         res.transitionTable[stateName] = {
