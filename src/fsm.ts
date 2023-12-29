@@ -63,29 +63,26 @@ export class InvalidTransitionEventCause<S extends StateDataMap, E extends Event
 
 type AllCauses<S extends StateDataMap, E extends EventDataMap> = InvalidTransitionEventCause<S, E>;
 
+export type FSMOptions = {
+    ignoreInvalidTransition: boolean;
+};
+export const DEFAULT_FSM_OPTIONS: FSMOptions = {
+    ignoreInvalidTransition: false,
+};
+
 export class FSM<S extends StateDataMap, E extends EventDataMap> {
     constructor(
         readonly transitionTable: TransitionTable<S, E>,
-        public stateData: StateDataTuple<S>
+        public stateData: StateDataTuple<S>,
+        readonly options: FSMOptions
     ) {}
 
-    static create<S extends StateDataMap, E extends EventDataMap>(
-        transitionTable: TransitionTable<S, E>,
-        ...initialStateData: StateDataTuple<S>
-    ): FSM<S, E> {
-        return new FSM(transitionTable, initialStateData);
-    }
-
     clone(): FSM<S, E> {
-        return new FSM(this.transitionTable, this.stateData);
+        return new FSM(this.transitionTable, this.stateData, this.options);
     }
 
     async dispatch(...event: EventDataTuple<E>) {
-        return this.fullDispatch(event, { ignoreInvalidTransition: false });
-    }
-
-    async dispatchIgnoreInvalidTransition(...event: EventDataTuple<E>) {
-        return this.fullDispatch(event, { ignoreInvalidTransition: true });
+        return this.fullDispatch(event);
     }
 
     async fullDispatch(
@@ -101,7 +98,7 @@ export class FSM<S extends StateDataMap, E extends EventDataMap> {
         }
     ): Promise<void> {
         const {
-            ignoreInvalidTransition = false,
+            ignoreInvalidTransition = this.options.ignoreInvalidTransition,
             onTransition = NOP_FUNC,
             onInvalidTransition = NOP_FUNC,
         } = options ?? {};
@@ -154,7 +151,10 @@ type IsRedirectable<
     : false;
 
 export class FSMBuilder<S extends StateDataMap, E extends EventDataMap> {
-    constructor(readonly transitionTable: TransitionTable<S, E>) {}
+    constructor(
+        readonly transitionTable: TransitionTable<S, E>,
+        readonly options: FSMOptions = { ...DEFAULT_FSM_OPTIONS }
+    ) {}
 
     static create(): FSMBuilder<EmptyObject, EmptyObject> {
         return new FSMBuilder({});
@@ -228,8 +228,16 @@ export class FSMBuilder<S extends StateDataMap, E extends EventDataMap> {
         return this;
     }
 
+    setOptions(opts: Partial<FSMOptions>): this {
+        for (const [key, val] of Object.entries(opts)) {
+            if (val == undefined) continue;
+            this.options[key as keyof FSMOptions] = val;
+        }
+        return this;
+    }
+
     build(...initialStateData: StateDataTuple<S>): FSM<S, E> {
-        return FSM.create(this.transitionTable, ...initialStateData);
+        return new FSM(this.transitionTable, initialStateData, this.options);
     }
 }
 
