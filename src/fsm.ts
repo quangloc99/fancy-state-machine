@@ -9,6 +9,9 @@ type If<Cond extends boolean, IfTrueType, IfFalseType> = Cond extends true ? IfT
 export type StateDataMap = Record</* StateName */ KeyType, /* Data */ unknown[]>;
 export type EventDataMap = Record</* EventName */ KeyType, /* Data */ unknown[]>;
 
+const NOP_FUNC = () => {};
+const ECHO_FUNC = <Params extends unknown[]>(...params: Params) => params;
+
 export type StateDataTuple<
     States extends StateDataMap,
     StateName extends keyof States = keyof States,
@@ -50,14 +53,6 @@ export type Transition<
 
 export type AnyTransitionTable = TransitionTable<StateDataMap, EventDataMap>;
 
-export type FSMDispatchResult<S extends StateDataMap, E extends EventDataMap> = {
-    eventsFired: {
-        targetState: StateDataTuple<S>;
-        event: EventDataTuple<E>;
-    }[];
-    interruptedEvent?: EventDataTuple<E> | undefined;
-};
-
 export class InvalidTransitionEventCause<S extends StateDataMap, E extends EventDataMap> {
     constructor(
         readonly fromState: StateDataTuple<S>,
@@ -96,15 +91,24 @@ export class FSM<S extends StateDataMap, E extends EventDataMap> {
         event: EventDataTuple<E>,
         options?: {
             ignoreInvalidTransition?: boolean;
+            onTransition?: (
+                fromState: StateDataTuple<S>,
+                event: EventDataTuple<E>,
+                targetState: StateDataTuple<S>
+            ) => void;
+            onInvalidTransition?: (fromState: StateDataTuple<S>, event: EventDataTuple<E>) => void;
         }
-    ): Promise<FSMDispatchResult<S, E>> {
-        const { ignoreInvalidTransition = false } = options ?? {};
-        const eventsFired: FSMDispatchResult<S, E>['eventsFired'] = [];
-
+    ): Promise<void> {
+        const {
+            ignoreInvalidTransition = false,
+            onTransition = NOP_FUNC,
+            onInvalidTransition = NOP_FUNC,
+        } = options ?? {};
         const [eventName, ...eventData] = event;
         const [curStateName, ...curStateData] = this.stateData;
         const transitionData = this.transitionTable[curStateName].transitions[eventName];
         if (transitionData === undefined) {
+            onInvalidTransition(this.stateData, event);
             if (!ignoreInvalidTransition) {
                 // TODO additional data
                 throw new Error(
@@ -114,20 +118,17 @@ export class FSM<S extends StateDataMap, E extends EventDataMap> {
                     { cause: new InvalidTransitionEventCause<S, E>(this.stateData, event) }
                 );
             } else {
-                return {
-                    eventsFired,
-                    interruptedEvent: event,
-                };
+                return;
             }
         }
-
         const newData = await transitionData.transitionHandler(...curStateData, ...eventData);
-        this.stateData = [transitionData.target, ...newData] as StateDataTuple<S>;
+        const newState = [transitionData.target, ...newData] as StateDataTuple<S>;
+
+        onTransition(this.stateData, event, newState);
+        this.stateData = newState;
+
         // TODO redirect event here.
         await this.transitionTable[this.stateData[0]].enterHandler(...newData);
-        eventsFired.push({ targetState: this.stateData, event });
-
-        return { eventsFired };
     }
 
     getErrorCause<Cause extends AllCauses<S, E>>(e: unknown, causeClass: Constructor<Cause>): Cause | undefined {
@@ -175,7 +176,7 @@ export class FSMBuilder<S extends StateDataMap, E extends EventDataMap> {
     ): FSMBuilder<AddProp<S, StateName, StateData>, E>;
     addState<const StateName extends KeyType, StateData extends unknown[]>(
         stateName: StateName,
-        enterHandler: EnterHandlerFunction<E, StateData> = () => {}
+        enterHandler: EnterHandlerFunction<E, StateData> = NOP_FUNC
     ): FSMBuilder<AddProp<S, StateName, StateData>, E> {
         const res = this as unknown as FSMBuilder<S & Record<StateName, StateData>, E>;
         res.transitionTable[stateName] = {
@@ -218,7 +219,7 @@ export class FSMBuilder<S extends StateDataMap, E extends EventDataMap> {
     ) {
         this.transitionTable[src].transitions[evt] = {
             target: dst,
-            transitionHandler: transitionHandler ?? ((...params: unknown[]) => params),
+            transitionHandler: transitionHandler ?? ECHO_FUNC,
         } as Transition<S, E, SourceStateName, TargetStateName, EventName>;
         return this;
     }

@@ -31,20 +31,24 @@ describe(FSMBuilder, () => {
 
         it('should have correct return value', async () => {
             const fsm = fsmBuilder.build('green-light');
-            const res = await fsm.dispatch('next-light');
-            expect(res).toMatchInlineSnapshot(`
-{
-  "eventsFired": [
-    {
-      "event": [
-        "next-light",
-      ],
-      "targetState": [
-        "yellow-light",
-      ],
-    },
+            const onTransitionMock = jest.fn();
+            await fsm.fullDispatch(['next-light'], {
+                onTransition: onTransitionMock,
+            });
+            expect(onTransitionMock.mock.calls).toMatchInlineSnapshot(`
+[
+  [
+    [
+      "green-light",
+    ],
+    [
+      "next-light",
+    ],
+    [
+      "yellow-light",
+    ],
   ],
-}
+]
 `);
         });
     });
