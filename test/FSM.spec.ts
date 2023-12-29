@@ -194,6 +194,18 @@ describe(FSMBuilder, () => {
                 sequence: '314+15-9*2*653-58*979=',
                 result: BigInt(314 + 15 - 9 * 2 * 653 - 58 * 979),
             },
+            {
+                sequence: '69*0=',
+                result: 0n,
+            },
+            {
+                sequence: '0*69=',
+                result: 0n,
+            },
+            {
+                sequence: '420*0+0*69=',
+                result: 0n,
+            },
         ];
 
         test.each(testcases)('$sequence $result', async ({ sequence, result }) => {

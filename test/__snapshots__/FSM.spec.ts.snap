@@ -1,5 +1,47 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`FSMBuilder simple calculator 0*69= 0 1`] = `
+[
+  "entering",
+  0n,
+  1n,
+  0n,
+]
+`;
+
+exports[`FSMBuilder simple calculator 0*69= 0 2`] = `
+[
+  "start-entering",
+  0n,
+  0n,
+]
+`;
+
+exports[`FSMBuilder simple calculator 0*69= 0 3`] = `
+[
+  "entering",
+  0n,
+  0n,
+  6n,
+]
+`;
+
+exports[`FSMBuilder simple calculator 0*69= 0 4`] = `
+[
+  "entering",
+  0n,
+  0n,
+  69n,
+]
+`;
+
+exports[`FSMBuilder simple calculator 0*69= 0 5`] = `
+[
+  "result",
+  0n,
+]
+`;
+
 exports[`FSMBuilder simple calculator 0= 0 1`] = `
 [
   "entering",
@@ -1125,6 +1167,48 @@ exports[`FSMBuilder simple calculator 1-2+3-4+5-6+7-8+9-10= -5 21`] = `
 ]
 `;
 
+exports[`FSMBuilder simple calculator 69*0= 0 1`] = `
+[
+  "entering",
+  0n,
+  1n,
+  6n,
+]
+`;
+
+exports[`FSMBuilder simple calculator 69*0= 0 2`] = `
+[
+  "entering",
+  0n,
+  1n,
+  69n,
+]
+`;
+
+exports[`FSMBuilder simple calculator 69*0= 0 3`] = `
+[
+  "start-entering",
+  0n,
+  69n,
+]
+`;
+
+exports[`FSMBuilder simple calculator 69*0= 0 4`] = `
+[
+  "entering",
+  0n,
+  69n,
+  0n,
+]
+`;
+
+exports[`FSMBuilder simple calculator 69*0= 0 5`] = `
+[
+  "result",
+  0n,
+]
+`;
+
 exports[`FSMBuilder simple calculator 69-420= -351 1`] = `
 [
   "entering",
@@ -1372,6 +1456,100 @@ exports[`FSMBuilder simple calculator 314+15-9*2*653-58*979= -68207 22`] = `
 [
   "result",
   -68207n,
+]
+`;
+
+exports[`FSMBuilder simple calculator 420*0+0*69= 0 1`] = `
+[
+  "entering",
+  0n,
+  1n,
+  4n,
+]
+`;
+
+exports[`FSMBuilder simple calculator 420*0+0*69= 0 2`] = `
+[
+  "entering",
+  0n,
+  1n,
+  42n,
+]
+`;
+
+exports[`FSMBuilder simple calculator 420*0+0*69= 0 3`] = `
+[
+  "entering",
+  0n,
+  1n,
+  420n,
+]
+`;
+
+exports[`FSMBuilder simple calculator 420*0+0*69= 0 4`] = `
+[
+  "start-entering",
+  0n,
+  420n,
+]
+`;
+
+exports[`FSMBuilder simple calculator 420*0+0*69= 0 5`] = `
+[
+  "entering",
+  0n,
+  420n,
+  0n,
+]
+`;
+
+exports[`FSMBuilder simple calculator 420*0+0*69= 0 6`] = `
+[
+  "start-entering",
+  0n,
+  1n,
+]
+`;
+
+exports[`FSMBuilder simple calculator 420*0+0*69= 0 7`] = `
+[
+  "entering",
+  0n,
+  1n,
+  0n,
+]
+`;
+
+exports[`FSMBuilder simple calculator 420*0+0*69= 0 8`] = `
+[
+  "start-entering",
+  0n,
+  0n,
+]
+`;
+
+exports[`FSMBuilder simple calculator 420*0+0*69= 0 9`] = `
+[
+  "entering",
+  0n,
+  0n,
+  6n,
+]
+`;
+
+exports[`FSMBuilder simple calculator 420*0+0*69= 0 10`] = `
+[
+  "entering",
+  0n,
+  0n,
+  69n,
+]
+`;
+
+exports[`FSMBuilder simple calculator 420*0+0*69= 0 11`] = `
+[
+  "result",
+  0n,
 ]
 `;
 
