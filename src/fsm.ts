@@ -109,7 +109,7 @@ export class FSM<S extends StateDataMap, E extends EventDataMap> {
         let curEvent: EnterHandlerFunctionReturnType<E> = event;
 
         while (Array.isArray(curEvent)) {
-            const [eventName, ...eventData] = event;
+            const [eventName, ...eventData] = curEvent as EventDataTuple<E>;
             const [curStateName, ...curStateData] = this.stateData;
             const transitionData = this.transitionTable[curStateName].transitions[eventName];
             if (transitionData === undefined) {
