@@ -527,7 +527,7 @@ describe(FSMBuilder, () => {
             [1, 3, 2, 4],
         ] as const;
 
-        test.each(testPasswords)('Should fail on incorrect password $1,$2,$3,$4', async (...pass) => {
+        test.each(testPasswords)('Should fail on incorrect password %d,%d,%d,%d', async (...pass) => {
             const fsm = initialFsm.clone();
             await consumPassword(fsm, pass);
             expect(fsm.stateData[0]).toEqual('fail');
