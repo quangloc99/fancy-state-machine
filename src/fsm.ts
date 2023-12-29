@@ -144,6 +144,29 @@ export class FSM<S extends StateDataMap, E extends EventDataMap> {
         }
     }
 
+    /**
+     * @remarks
+     * When initialized, the stateData is fixed.
+     *
+     * But if dynamic event for the initial state are defined the transition table, these events
+     * won't be trigger.
+     *
+     * > Think of this as the state was not entered, therefore the `enterHandler` was not called.
+     *
+     * Call this method to _re-enter_ the current state, trigger the `enterHandler`, and dispatch the returned event.
+     */
+    async drain(options?: {
+        ignoreInvalidTransition?: boolean;
+        onTransition?: (fromState: StateDataTuple<S>, event: EventDataTuple<E>, targetState: StateDataTuple<S>) => void;
+        onInvalidTransition?: (fromState: StateDataTuple<S>, event: EventDataTuple<E>) => void;
+    }): Promise<void> {
+        const [state, ...data] = this.stateData;
+        const newEvent = await this.transitionTable[state].enterHandler(...data);
+        if (Array.isArray(newEvent)) {
+            return this.fullDispatch(newEvent, options);
+        }
+    }
+
     getErrorCause<Cause extends AllCauses<S, E>>(e: unknown, causeClass: Constructor<Cause>): Cause | undefined {
         if (!(e instanceof Error)) return undefined;
         if (e.cause instanceof causeClass) return e.cause;
