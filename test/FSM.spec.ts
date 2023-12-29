@@ -18,9 +18,10 @@ describe(FSMBuilder, () => {
             .addTransition('red-light', 'next-light', 'green-light')
             .addTransition('green-light', 'next-light', 'yellow-light')
             .addTransition('yellow-light', 'next-light', 'red-light');
+        const builtFsm = fsmBuilder.build('green-light');
 
         test('do `next-light` 6 times', async () => {
-            const fsm = fsmBuilder.build('green-light');
+            const fsm = builtFsm.clone();
 
             await fsm.dispatch('next-light');
             expect(fsm.stateData).toEqual(['yellow-light']);
@@ -38,7 +39,7 @@ describe(FSMBuilder, () => {
         });
 
         it('should have correct return value', async () => {
-            const fsm = fsmBuilder.build('green-light');
+            const fsm = builtFsm.clone();
             const onTransitionMock = jest.fn();
             await fsm.fullDispatch(['next-light'], {
                 onTransition: onTransitionMock,
@@ -277,6 +278,7 @@ describe(FSMBuilder, () => {
                 currentSum += currentTerm * currentOperand;
                 return [currentSum];
             });
+        const initialFsm = fsmBuilder.build('start-entering', 0n, 1n);
 
         type TestCase = {
             sequence: string;
@@ -360,7 +362,7 @@ describe(FSMBuilder, () => {
         }
 
         test.each(testcases)('$sequence $result', async ({ sequence, result }) => {
-            const fsm = fsmBuilder.build('start-entering', 0n, 1n);
+            const fsm = initialFsm.clone();
             for (const ch of sequence) {
                 await evaluateSingleChar(fsm, ch);
                 expect(fsm.stateData).toMatchSnapshot();
@@ -429,7 +431,7 @@ describe(FSMBuilder, () => {
         test.each(failTestCases)(
             'Fail test: $sequence (error on state "$sourceState" when "$event" is fired)',
             async ({ sequence, sourceState, event }) => {
-                const fsm = fsmBuilder.build('start-entering', 0n, 1n);
+                const fsm = initialFsm.clone();
                 let err: unknown = undefined;
 
                 try {
