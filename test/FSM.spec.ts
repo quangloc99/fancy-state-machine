@@ -499,15 +499,10 @@ describe(FSMBuilder, () => {
         });
 
         async function consumPassword(fsm: typeof initialFsm, password: [Digit, Digit, Digit, Digit]) {
-            console.log(fsm.stateData);
             await fsm.dispatch('digit', password[0]);
-            console.log(fsm.stateData);
             await fsm.dispatch('digit', password[1]);
-            console.log(fsm.stateData);
             await fsm.dispatch('digit', password[2]);
-            console.log(fsm.stateData);
             await fsm.dispatch('digit', password[3]);
-            console.log(fsm.stateData);
         }
 
         it('should unlock on correct password', async () => {
