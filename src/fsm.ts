@@ -41,55 +41,56 @@ export type Transition<
     : never;
 
 export type AnyTransitionTable = TransitionTable<StateDataMap, EventDataMap>;
-export type StateDataTuple<States extends StateDataMap, StateName extends keyof States> = StateName extends unknown
-    ? [StateName, ...States[StateName]]
-    : never;
-export type EventDataTuple<Events extends EventDataMap, EventName extends keyof Events> = EventName extends unknown
-    ? [EventName, ...Events[EventName]]
-    : never;
-export type FSMStates<FTT extends AnyTransitionTable> = FTT extends TransitionTable<infer S, infer _E> ? S : never;
-export type FSMEvents<FTT extends AnyTransitionTable> = FTT extends TransitionTable<infer _S, infer E> ? E : never;
-export type AnyStateDataTuple<FTT extends AnyTransitionTable> = StateDataTuple<FSMStates<FTT>, keyof FSMStates<FTT>>;
-export type AnyEventDataTuple<FTT extends AnyTransitionTable> = EventDataTuple<FSMEvents<FTT>, keyof FSMEvents<FTT>>;
+export type StateDataTuple<
+    States extends StateDataMap,
+    StateName extends keyof States = keyof States,
+> = StateName extends unknown ? [StateName, ...States[StateName]] : never;
+export type EventDataTuple<
+    Events extends EventDataMap,
+    EventName extends keyof Events = keyof Events,
+> = EventName extends unknown ? [EventName, ...Events[EventName]] : never;
 
-export type FSMDispatchResult<FTT extends AnyTransitionTable> = {
-    eventsFired: { targetState: AnyStateDataTuple<FTT>; event: AnyEventDataTuple<FTT> }[];
-    interruptedEvent?: AnyEventDataTuple<FTT> | undefined;
+export type FSMDispatchResult<S extends StateDataMap, E extends EventDataMap> = {
+    eventsFired: {
+        targetState: StateDataTuple<S>;
+        event: EventDataTuple<E>;
+    }[];
+    interruptedEvent?: EventDataTuple<E> | undefined;
 };
 
-export class FSM<FTT extends AnyTransitionTable> {
+export class FSM<S extends StateDataMap, E extends EventDataMap> {
     constructor(
-        readonly transitionTable: FTT,
-        public stateData: AnyStateDataTuple<FTT>
+        readonly transitionTable: TransitionTable<S, E>,
+        public stateData: StateDataTuple<S>
     ) {}
 
-    static create<FTT extends AnyTransitionTable>(
-        transitionTable: FTT,
-        ...initialStateData: AnyStateDataTuple<FTT>
-    ): FSM<FTT> {
+    static create<S extends StateDataMap, E extends EventDataMap>(
+        transitionTable: TransitionTable<S, E>,
+        ...initialStateData: StateDataTuple<S>
+    ): FSM<S, E> {
         return new FSM(transitionTable, initialStateData);
     }
 
-    clone(): FSM<FTT> {
+    clone(): FSM<S, E> {
         return new FSM(this.transitionTable, this.stateData);
     }
 
-    async dispatch(...event: AnyEventDataTuple<FTT>) {
+    async dispatch(...event: EventDataTuple<E>) {
         return this.fullDispatch(event, { ignoreInvalidTransition: false });
     }
 
-    async dispatchIgnoreInvalidTransition(...event: AnyEventDataTuple<FTT>) {
+    async dispatchIgnoreInvalidTransition(...event: EventDataTuple<E>) {
         return this.fullDispatch(event, { ignoreInvalidTransition: true });
     }
 
     async fullDispatch(
-        event: AnyEventDataTuple<FTT>,
+        event: EventDataTuple<E>,
         options?: {
             ignoreInvalidTransition?: boolean;
         }
-    ): Promise<FSMDispatchResult<FTT>> {
+    ): Promise<FSMDispatchResult<S, E>> {
         const { ignoreInvalidTransition = false } = options ?? {};
-        const eventsFired: FSMDispatchResult<FTT>['eventsFired'] = [];
+        const eventsFired: FSMDispatchResult<S, E>['eventsFired'] = [];
 
         const [eventName, ...eventData] = event;
         const [curStateName, ...curStateData] = this.stateData;
@@ -109,7 +110,7 @@ export class FSM<FTT extends AnyTransitionTable> {
         }
 
         const newData = await transitionData.transitionHandler(curStateData, eventData);
-        this.stateData = [transitionData.target, ...newData] as AnyStateDataTuple<FTT>;
+        this.stateData = [transitionData.target, ...newData] as StateDataTuple<S>;
         // TODO redirect event here.
         await this.transitionTable[this.stateData[0]].enterHandler(...newData);
         eventsFired.push({ targetState: this.stateData, event });
@@ -130,30 +131,30 @@ type IsRedirectable<
     ? true
     : false;
 
-export class FSMBuilder<States extends StateDataMap, Events extends EventDataMap> {
-    constructor(readonly fsm: TransitionTable<States, Events>) {}
+export class FSMBuilder<S extends StateDataMap, E extends EventDataMap> {
+    constructor(readonly transitionTable: TransitionTable<S, E>) {}
 
     static create(): FSMBuilder<EmptyObject, EmptyObject> {
         return new FSMBuilder({});
     }
 
     addEvent<EventName extends KeyType, EventData extends unknown[] = []>(): FSMBuilder<
-        States,
-        AddProp<Events, EventName, EventData>
+        S,
+        AddProp<E, EventName, EventData>
     > {
-        return this as unknown as FSMBuilder<States, AddProp<Events, EventName, EventData>>;
+        return this as unknown as FSMBuilder<S, AddProp<E, EventName, EventData>>;
     }
 
-    addEvents<NewEvents extends EventDataMap>(): FSMBuilder<States, Simplify<Events & NewEvents>> {
-        return this as unknown as FSMBuilder<States, Simplify<Events & NewEvents>>;
+    addEvents<NewEvents extends EventDataMap>(): FSMBuilder<S, Simplify<E & NewEvents>> {
+        return this as unknown as FSMBuilder<S, Simplify<E & NewEvents>>;
     }
 
     addState<const StateName extends KeyType, StateData extends unknown[]>(
         stateName: StateName,
         enterHandler: EnterHandlerFunction<StateData>
-    ): FSMBuilder<AddProp<States, StateName, StateData>, Events> {
-        const res = this as unknown as FSMBuilder<States & Record<StateName, StateData>, Events>;
-        res.fsm[stateName] = {
+    ): FSMBuilder<AddProp<S, StateName, StateData>, E> {
+        const res = this as unknown as FSMBuilder<S & Record<StateName, StateData>, E>;
+        res.transitionTable[stateName] = {
             enterHandler,
             transitions: {},
         };
@@ -161,44 +162,44 @@ export class FSMBuilder<States extends StateDataMap, Events extends EventDataMap
     }
 
     addTransition<
-        const SourceStateName extends keyof States,
-        const EventName extends keyof Events,
-        const TagetStateName extends keyof States,
+        const SourceStateName extends keyof S,
+        const EventName extends keyof E,
+        const TagetStateName extends keyof S,
     >(
         src: SourceStateName,
         evt: EventName,
         dst: TagetStateName,
-        transitionHandler: Transition<States, Events, SourceStateName, TagetStateName, EventName>['transitionHandler']
+        transitionHandler: Transition<S, E, SourceStateName, TagetStateName, EventName>['transitionHandler']
     ): this;
 
     addTransition<
-        const SourceStateName extends keyof States,
-        const EventName extends keyof Events,
-        const TargetStateName extends keyof States,
+        const SourceStateName extends keyof S,
+        const EventName extends keyof E,
+        const TargetStateName extends keyof S,
     >(
         src: SourceStateName,
         evt: EventName,
         dst: TargetStateName
-    ): If<IsRedirectable<States, Events, SourceStateName, TargetStateName, EventName>, this, never>;
+    ): If<IsRedirectable<S, E, SourceStateName, TargetStateName, EventName>, this, never>;
 
     addTransition<
-        const SourceStateName extends keyof States,
-        const EventName extends keyof Events,
-        const TargetStateName extends keyof States,
+        const SourceStateName extends keyof S,
+        const EventName extends keyof E,
+        const TargetStateName extends keyof S,
     >(
         src: SourceStateName,
         evt: EventName,
         dst: TargetStateName,
-        transitionHandler?: Transition<States, Events, SourceStateName, TargetStateName, EventName>['transitionHandler']
+        transitionHandler?: Transition<S, E, SourceStateName, TargetStateName, EventName>['transitionHandler']
     ) {
-        this.fsm[src].transitions[evt] = {
+        this.transitionTable[src].transitions[evt] = {
             target: dst,
             transitionHandler: transitionHandler ?? ((...params: unknown[]) => params),
-        } as Transition<States, Events, SourceStateName, TargetStateName, EventName>;
+        } as Transition<S, E, SourceStateName, TargetStateName, EventName>;
         return this;
     }
 
-    build() {
-        return this.fsm;
+    build(...initialStateData: StateDataTuple<S>): FSM<S, E> {
+        return FSM.create(this.transitionTable, ...initialStateData);
     }
 }
