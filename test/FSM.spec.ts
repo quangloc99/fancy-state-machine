@@ -451,4 +451,86 @@ describe(FSMBuilder, () => {
             }
         );
     });
+
+    describe('password', () => {
+        type Digit = 1 | 2 | 3 | 4;
+        function createSingleDigitPassword(pass: Digit) {
+            return FSMBuilder.create()
+                .addEvent<'digit', [d: Digit]>()
+                .addEvent<'wrong'>()
+                .addEvent<'correct'>()
+                .addEvent<'redirect'>()
+
+                .addState('start')
+                .addState('unlocked', () => ['redirect'])
+                .addState('fail', () => ['redirect'])
+                .addState('verifying', (d: Digit) => {
+                    return d === pass ? ['correct'] : ['wrong'];
+                })
+                .addTransition('start', 'digit', 'verifying')
+                .addTransition('verifying', 'wrong', 'fail', () => [])
+                .addTransition('verifying', 'correct', 'unlocked', () => []);
+        }
+
+        const fsmBuilder = FSMBuilder.create()
+            .embed(createSingleDigitPassword(4).scope('first-digit.'))
+            .embed(createSingleDigitPassword(2).scope('second-digit.'))
+            .embed(createSingleDigitPassword(1).scope('third-digit.'))
+            .embed(createSingleDigitPassword(3).scope('forth-digit.'))
+
+            .addState('start', () => ['redirect'])
+            .addState('unlocked')
+            .addState('fail')
+
+            .addTransition('start', 'redirect', 'first-digit.start')
+            .addTransition('first-digit.unlocked', 'redirect', 'second-digit.start')
+            .addTransition('second-digit.unlocked', 'redirect', 'third-digit.start')
+            .addTransition('third-digit.unlocked', 'redirect', 'forth-digit.start')
+            .addTransition('forth-digit.unlocked', 'redirect', 'unlocked')
+            .addTransition('first-digit.fail', 'redirect', 'fail')
+            .addTransition('second-digit.fail', 'redirect', 'fail')
+            .addTransition('third-digit.fail', 'redirect', 'fail')
+            .addTransition('forth-digit.fail', 'redirect', 'fail')
+            .addTransition('fail', 'digit', 'fail');
+        const initialFsm = fsmBuilder.build('start');
+
+        beforeAll(async () => {
+            await initialFsm.drain();
+        });
+
+        async function consumPassword(fsm: typeof initialFsm, password: [Digit, Digit, Digit, Digit]) {
+            console.log(fsm.stateData);
+            await fsm.dispatch('digit', password[0]);
+            console.log(fsm.stateData);
+            await fsm.dispatch('digit', password[1]);
+            console.log(fsm.stateData);
+            await fsm.dispatch('digit', password[2]);
+            console.log(fsm.stateData);
+            await fsm.dispatch('digit', password[3]);
+            console.log(fsm.stateData);
+        }
+
+        it('should unlock on correct password', async () => {
+            const fsm = initialFsm.clone();
+            await consumPassword(fsm, [4, 2, 1, 3]);
+            expect(fsm.stateData).toEqual(['unlocked']);
+        });
+
+        const testPasswords = [
+            [1, 2, 3, 4],
+            [1, 2, 1, 2],
+            [1, 1, 1, 1],
+            [2, 2, 2, 2],
+            [3, 3, 3, 3],
+            [4, 4, 4, 4],
+            [4, 3, 2, 1],
+            [1, 3, 2, 4],
+        ] as const;
+
+        test.each(testPasswords)('Should fail on incorrect password $1,$2,$3,$4', async (...pass) => {
+            const fsm = initialFsm.clone();
+            await consumPassword(fsm, pass);
+            expect(fsm.stateData[0]).toEqual('fail');
+        });
+    });
 });
