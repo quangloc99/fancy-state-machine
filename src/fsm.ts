@@ -89,7 +89,7 @@ export class FSM<S extends StateDataMap, E extends EventDataMap> {
     }
 
     async fullDispatch(
-        event: EventDataTuple<E>,
+        _event: EventDataTuple<E>,
         options?: {
             ignoreInvalidTransition?: boolean;
             onTransition?: (
@@ -106,20 +106,20 @@ export class FSM<S extends StateDataMap, E extends EventDataMap> {
             onInvalidTransition = NOP_FUNC,
         } = options ?? {};
 
-        let curEvent: EnterHandlerFunctionReturnType<E> = event;
+        let curEvent: EnterHandlerFunctionReturnType<E> = _event;
 
         while (Array.isArray(curEvent)) {
             const [eventName, ...eventData] = curEvent as EventDataTuple<E>;
             const [curStateName, ...curStateData] = this.stateData;
             const transitionData = this.transitionTable[curStateName].transitions[eventName];
             if (transitionData === undefined) {
-                onInvalidTransition(this.stateData, event);
+                onInvalidTransition(this.stateData, curEvent);
                 if (!ignoreInvalidTransition) {
                     throw new Error(
                         `No transition from state ${JSON.stringify(
                             String(this.stateData[0])
-                        )} when event ${JSON.stringify(String(event[0]))} is fired`,
-                        { cause: new InvalidTransitionEventCause<S, E>(this.stateData, event) }
+                        )} when event ${JSON.stringify(String(curEvent[0]))} is fired`,
+                        { cause: new InvalidTransitionEventCause<S, E>(this.stateData, curEvent) }
                     );
                 } else {
                     return;
@@ -128,7 +128,7 @@ export class FSM<S extends StateDataMap, E extends EventDataMap> {
             const newData = await transitionData.transitionHandler(...curStateData, ...eventData);
             const newState = [transitionData.target, ...newData] as StateDataTuple<S>;
 
-            onTransition(this.stateData, event, newState);
+            onTransition(this.stateData, curEvent, newState);
             this.stateData = newState;
 
             curEvent = await this.transitionTable[this.stateData[0]].enterHandler(...newData);
@@ -242,3 +242,37 @@ export type FSMStates<T> =
 export type FSMEvents<T> =
     | (T extends FSMBuilder<infer _S, infer F> ? F : never)
     | (T extends FSM<infer _S, infer F> ? F : never);
+
+/**
+ * This type is parsed directly from the function signature.
+ *
+ * @remarks
+ * In my opinion, the code reader should understand the function signature, therefore the
+ * type of the callback is in the function signature instead of here.
+ *
+ * This is just a helper type for the consumer and hopefully it serves its purpose.
+ */
+export type OnTransitionCallbackWithMaps<S extends StateDataMap, E extends EventDataMap> = NonNullable<
+    NonNullable<Parameters<FSM<S, E>['fullDispatch']>[1]>['onTransition']
+>;
+
+export type OnTransitionCallback<T> =
+    | (T extends FSMBuilder<infer S, infer F> ? OnTransitionCallbackWithMaps<S, F> : never)
+    | (T extends FSM<infer S, infer F> ? OnTransitionCallbackWithMaps<S, F> : never);
+
+/**
+ * This type is parsed directly from the function signature.
+ *
+ * @remarks
+ * In my opinion, the code reader should understand the function signature, therefore the
+ * type of the callback is in the function signature instead of here.
+ *
+ * This is just a helper type for the consumer and hopefully it serves its purpose.
+ */
+export type OnInvalidTransitionCallbackWithMaps<S extends StateDataMap, E extends EventDataMap> = NonNullable<
+    NonNullable<Parameters<FSM<S, E>['fullDispatch']>[1]>['onInvalidTransition']
+>;
+
+export type OnInvalidTransitionCallback<T> =
+    | (T extends FSMBuilder<infer S, infer F> ? OnInvalidTransitionCallbackWithMaps<S, F> : never)
+    | (T extends FSM<infer S, infer F> ? OnInvalidTransitionCallbackWithMaps<S, F> : never);
