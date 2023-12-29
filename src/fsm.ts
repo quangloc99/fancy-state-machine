@@ -1,6 +1,6 @@
 import { Promisable, Constructor, Simplify } from 'type-fest';
 
-type KeyType = string | symbol | number;
+type KeyType = string;
 
 type EmptyObject = Record<never, never>;
 type AddProp<Obj extends object, PropName extends KeyType, Value> = Simplify<Obj & Record<PropName, Value>>;
@@ -15,11 +15,15 @@ const ECHO_FUNC = <Params extends unknown[]>(...params: Params) => params;
 export type StateDataTuple<
     States extends StateDataMap,
     StateName extends keyof States = keyof States,
-> = StateName extends unknown ? [StateName, ...States[StateName]] : never;
+> = StateName extends string ? [StateName, ...States[StateName]] : never;
 export type EventDataTuple<
     Events extends EventDataMap,
     EventName extends keyof Events = keyof Events,
-> = EventName extends unknown ? [EventName, ...Events[EventName]] : never;
+> = EventName extends string ? [EventName, ...Events[EventName]] : never;
+
+export type AddScopeToStateDataMap<S extends StateDataMap, Scope extends string> = Simplify<{
+    [KeyType in keyof S as KeyType extends string ? `${Scope}${KeyType}` : never]: S[KeyType];
+}>;
 
 export type EnterHandlerFunctionReturnType<E extends EventDataMap> = void | undefined | null | EventDataTuple<E>;
 export type EnterHandlerFunction<E extends EventDataMap, Params extends unknown[] = unknown[]> = (
@@ -42,7 +46,7 @@ export type Transition<
     SourceStateName extends keyof States,
     TargetStateName extends keyof States,
     EventName extends keyof Events,
-> = TargetStateName extends unknown
+> = TargetStateName extends string
     ? {
           target: TargetStateName;
           transitionHandler: (
@@ -203,6 +207,23 @@ export class FSMBuilder<S extends StateDataMap, E extends EventDataMap> {
             ...this.transitionTable,
             ...subFSMBuilder.transitionTable,
         } as TransitionTable<S & SubFSMBuilderStates, E & SubFSMBuilderEvents>;
+        return res;
+    }
+
+    scope<Scope extends string>(scope: Scope): FSMBuilder<AddScopeToStateDataMap<S, Scope>, E> {
+        const curTransitionTable = this.transitionTable as TransitionTable<StateDataMap, EventDataMap>;
+        const newTransitionTable = {} as TransitionTable<StateDataMap, EventDataMap>;
+
+        for (const [srcState, transitionData] of Object.entries(curTransitionTable)) {
+            for (const transition of Object.values(transitionData.transitions)) {
+                if (transition === undefined) continue;
+                transition.target = `${scope}${transition.target}`;
+            }
+            newTransitionTable[`${scope}${srcState}`] = transitionData;
+        }
+
+        const res = this as unknown as FSMBuilder<AddScopeToStateDataMap<S, Scope>, E>;
+        res.transitionTable = newTransitionTable as TransitionTable<AddScopeToStateDataMap<S, Scope>, E>;
         return res;
     }
 
