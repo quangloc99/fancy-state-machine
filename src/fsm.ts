@@ -155,7 +155,9 @@ export class FSMBuilder<S extends StateDataMap, E extends EventDataMap> {
         stateName: StateName,
         enterHandler: EnterHandlerFunction<StateData>
     ): FSMBuilder<AddProp<S, StateName, StateData>, E>;
-    addState<const StateName extends KeyType>(stateName: StateName): FSMBuilder<AddProp<S, StateName, []>, E>;
+    addState<const StateName extends KeyType, StateData extends unknown[] = []>(
+        stateName: StateName
+    ): FSMBuilder<AddProp<S, StateName, StateData>, E>;
     addState<const StateName extends KeyType, StateData extends unknown[]>(
         stateName: StateName,
         enterHandler: EnterHandlerFunction<StateData> = () => {}

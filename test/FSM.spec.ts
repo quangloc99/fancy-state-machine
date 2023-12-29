@@ -121,7 +121,7 @@ describe(FSMBuilder, () => {
             .addEvent<'digit', [d: 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9]>()
             .addState('start-entering', (_currentSum: bigint, _currentTerm: bigint) => {})
             .addState('entering', (_currentSum: bigint, _currentTerm: bigint, _currentOperand: bigint) => {})
-            .addState('result', (_result: bigint) => {})
+            .addState<'result', [result: bigint]>('result')
 
             .addTransition('entering', '+', 'start-entering', (currentSum, currentTerm, currentOperand) => {
                 currentSum += currentTerm * currentOperand;
