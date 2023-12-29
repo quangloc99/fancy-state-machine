@@ -159,7 +159,7 @@ type IsRedirectable<
     : false;
 
 export class FSMBuilder<S extends StateDataMap, E extends EventDataMap> {
-    constructor(readonly transitionTable: TransitionTable<S, E>) {}
+    constructor(public transitionTable: TransitionTable<S, E>) {}
 
     static create(): FSMBuilder<EmptyObject, EmptyObject> {
         return new FSMBuilder({});
@@ -192,6 +192,17 @@ export class FSMBuilder<S extends StateDataMap, E extends EventDataMap> {
             enterHandler,
             transitions: {},
         };
+        return res;
+    }
+
+    embed<SubFSMBuilderStates extends StateDataMap, SubFSMBuilderEvents extends EventDataMap>(
+        subFSMBuilder: FSMBuilder<SubFSMBuilderStates, SubFSMBuilderEvents>
+    ): FSMBuilder<Simplify<S & SubFSMBuilderStates>, Simplify<E & SubFSMBuilderEvents>> {
+        const res = this as unknown as FSMBuilder<Simplify<S & SubFSMBuilderStates>, Simplify<E & SubFSMBuilderEvents>>;
+        res.transitionTable = {
+            ...this.transitionTable,
+            ...subFSMBuilder.transitionTable,
+        } as TransitionTable<S & SubFSMBuilderStates, E & SubFSMBuilderEvents>;
         return res;
     }
 
