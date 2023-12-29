@@ -1,4 +1,12 @@
-import { FSMBuilder, InvalidTransitionEventCause, FSMStates, FSMEvents, FSMFromBuilder } from '../src/index.js';
+import {
+    FSMBuilder,
+    InvalidTransitionEventCause,
+    FSMStates,
+    FSMEvents,
+    FSMFromBuilder,
+    OnTransitionCallback,
+    OnInvalidTransitionCallback,
+} from '../src/index.js';
 
 describe(FSMBuilder, () => {
     describe('simple trafic light', () => {
@@ -109,7 +117,124 @@ describe(FSMBuilder, () => {
     // https://en.wikipedia.org/wiki/Finite-state_machine#Example:_coin-operated_turnstile
     // But with a catch: the cost to unlock will be 10 coins.
     // Each time there is a coin event, the user can insert an integer amount of coins
-    it.todo('complex stateful turnstile');
+    describe('complex stateful turnstile', () => {
+        const fsmBuilder = FSMBuilder.create()
+            .addEvent<'coin', [amount: number]>()
+            .addEvent<'not-enough-amount'>()
+            .addEvent<'enough-amount'>()
+            .addEvent<'push'>()
+
+            .addState('locked', (_currentAmount: number) => {})
+            .addState('processing', (currentAmount: number) => {
+                if (currentAmount >= 10) return ['enough-amount'];
+                return ['not-enough-amount'];
+            })
+            .addState('unlocked')
+
+            .addTransition('locked', 'coin', 'processing', (currentAmount, additionalAmount) => [
+                currentAmount + additionalAmount,
+            ])
+            .addTransition('processing', 'not-enough-amount', 'locked')
+            .addTransition('processing', 'enough-amount', 'unlocked')
+            .addTransition('unlocked', 'push', 'locked', () => [0]);
+
+        type TestCase = {
+            events: ('push' | number)[];
+            stateAfterEach: (keyof FSMStates<typeof fsmBuilder>)[];
+            allEvents: (keyof FSMEvents<typeof fsmBuilder>)[];
+        };
+
+        const testcases: TestCase[] = [
+            {
+                events: [1, 'push', 2, 'push', 3, 'push', 4, 'push'],
+                stateAfterEach: ['locked', 'locked', 'locked', 'locked', 'locked', 'locked', 'unlocked', 'locked'],
+                allEvents: [
+                    'coin',
+                    'not-enough-amount',
+                    'push',
+
+                    'coin',
+                    'not-enough-amount',
+                    'push',
+
+                    'coin',
+                    'not-enough-amount',
+                    'push',
+
+                    'coin',
+                    'enough-amount',
+                    'push',
+                ],
+            },
+            {
+                events: [10, 'push', 5, 5, 'push', 2, 2, 2, 2, 2, 'push'],
+                stateAfterEach: [
+                    'unlocked',
+                    'locked',
+                    'locked',
+                    'unlocked',
+                    'locked',
+                    'locked',
+                    'locked',
+                    'locked',
+                    'locked',
+                    'unlocked',
+                    'locked',
+                ],
+                allEvents: [
+                    'coin',
+                    'enough-amount',
+                    'push',
+
+                    'coin',
+                    'not-enough-amount',
+                    'coin',
+                    'enough-amount',
+                    'push',
+
+                    'coin',
+                    'not-enough-amount',
+                    'coin',
+                    'not-enough-amount',
+                    'coin',
+                    'not-enough-amount',
+                    'coin',
+                    'not-enough-amount',
+                    'coin',
+                    'enough-amount',
+                    'push',
+                ],
+            },
+        ];
+
+        test.each(testcases)('Test with events: $events', async ({ events, stateAfterEach, allEvents }) => {
+            const fsm = fsmBuilder.build('locked', 0);
+            const actualStates: (keyof FSMStates<typeof fsmBuilder>)[] = [];
+            const actualEvents: (keyof FSMEvents<typeof fsmBuilder>)[] = [];
+            const onTransition: OnTransitionCallback<typeof fsm> = (_src, evt, _dst) => actualEvents.push(evt[0]);
+            const onInvalidTransition: OnInvalidTransitionCallback<typeof fsm> = (_src, evt) =>
+                actualEvents.push(evt[0]);
+
+            for (const e of events) {
+                if (typeof e === 'number') {
+                    await fsm.fullDispatch(['coin', e], {
+                        ignoreInvalidTransition: true,
+                        onTransition,
+                        onInvalidTransition,
+                    });
+                } else {
+                    await fsm.fullDispatch([e], {
+                        ignoreInvalidTransition: true,
+                        onTransition,
+                        onInvalidTransition,
+                    });
+                }
+                actualStates.push(fsm.stateData[0]);
+            }
+            expect(actualStates).toEqual(stateAfterEach);
+            expect(actualEvents).toEqual(allEvents);
+        });
+    });
 
     // a calculator consist of buttons from 0 to 9, plus (+) sign, minus (-) sign, multiply (*) sign and equal (=) sign.
     // This calculator accept this sequence of button pressing, and evaluate the expression, with multiplication
