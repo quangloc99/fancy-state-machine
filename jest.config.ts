@@ -12,15 +12,20 @@ const config: Config = {
     testEnvironment: 'node',
     testMatch: ['**/__test__/**/*.[jt]s?(x)', '**/?(*.)+(spec|test).[tj]s?(x)'],
     testPathIgnorePatterns: ['node_modules/'],
+    moduleNameMapper: {
+        '^(\\.{1,2}/.*)\\.js$': '$1',
+    },
     transform: {
         '^.+\\.ts?$': [
             'ts-jest',
             {
                 tsconfig: 'tsconfig.json',
+                useESM: true,
             },
         ],
     },
     testTimeout: 100000,
+    prettierPath: null,
 };
 
 export default config;

@@ -10,9 +10,10 @@ describe(FSMBuilder, () => {
             .addTransition('red-light', 'next-light', 'green-light')
             .addTransition('green-light', 'next-light', 'yellow-light')
             .addTransition('yellow-light', 'next-light', 'red-light');
-        const fsm = fsmBuilder.build('green-light');
 
         it('do `next-light` 6 times', async () => {
+            const fsm = fsmBuilder.build('green-light');
+
             await fsm.dispatch('next-light');
             expect(fsm.stateData).toEqual(['yellow-light']);
             await fsm.dispatch('next-light');
@@ -26,6 +27,25 @@ describe(FSMBuilder, () => {
             expect(fsm.stateData).toEqual(['red-light']);
             await fsm.dispatch('next-light');
             expect(fsm.stateData).toEqual(['green-light']);
+        });
+
+        it('check return type', async () => {
+            const fsm = fsmBuilder.build('green-light');
+            const res = await fsm.dispatch('next-light');
+            expect(res).toMatchInlineSnapshot(`
+{
+  "eventsFired": [
+    {
+      "event": [
+        "next-light",
+      ],
+      "targetState": [
+        "yellow-light",
+      ],
+    },
+  ],
+}
+`);
         });
     });
 });
