@@ -9,16 +9,11 @@ import {
     renderToMermaid,
 } from '../src/index.js';
 
+import { trafficLightFsmBuilder } from '../examples/traffic-light.js';
+
 describe(FSMBuilder, () => {
     describe('simple trafic light', () => {
-        const fsmBuilder = FSMBuilder.create()
-            .addEvent<'next-light'>()
-            .addState('red-light')
-            .addState('green-light')
-            .addState('yellow-light')
-            .addTransition('red-light', 'next-light', 'green-light')
-            .addTransition('green-light', 'next-light', 'yellow-light')
-            .addTransition('yellow-light', 'next-light', 'red-light');
+        const fsmBuilder = trafficLightFsmBuilder;
         const builtFsm = fsmBuilder.build('green-light');
 
         test('do `next-light` 6 times', async () => {
@@ -480,7 +475,7 @@ describe(FSMBuilder, () => {
                 .addEvent<'digit', [d: Digit]>()
                 .addEvent<'wrong'>()
                 .addEvent<'correct'>()
-                .addEvent<'redirect'>()
+                .addEvent<'retry'>()
 
                 .addState('start')
                 .addState('unlocked', () => ['redirect'])
@@ -503,15 +498,15 @@ describe(FSMBuilder, () => {
             .addState('unlocked!')
             .addState('fail!')
 
-            .addTransition('start', 'redirect', 'first-digit.start')
-            .addTransition('first-digit.unlocked', 'redirect', 'second-digit.start')
-            .addTransition('second-digit.unlocked', 'redirect', 'third-digit.start')
-            .addTransition('third-digit.unlocked', 'redirect', 'forth-digit.start')
-            .addTransition('forth-digit.unlocked', 'redirect', 'unlocked!')
-            .addTransition('first-digit.fail', 'redirect', 'fail!')
-            .addTransition('second-digit.fail', 'redirect', 'fail!')
-            .addTransition('third-digit.fail', 'redirect', 'fail!')
-            .addTransition('forth-digit.fail', 'redirect', 'fail!')
+            .addTransition('start', 'retry', 'first-digit.start')
+            .addTransition('first-digit.unlocked', 'retry', 'second-digit.start')
+            .addTransition('second-digit.unlocked', 'retry', 'third-digit.start')
+            .addTransition('third-digit.unlocked', 'retry', 'forth-digit.start')
+            .addTransition('forth-digit.unlocked', 'retry', 'unlocked!')
+            .addTransition('first-digit.fail', 'retry', 'fail!')
+            .addTransition('second-digit.fail', 'retry', 'fail!')
+            .addTransition('third-digit.fail', 'retry', 'fail!')
+            .addTransition('forth-digit.fail', 'retry', 'fail!')
             .addTransition('fail!', 'digit', 'fail!', () => []);
         const initialFsm = fsmBuilder.build('start');
 
@@ -563,7 +558,7 @@ describe(FSMBuilder, () => {
             return FSMBuilder.create()
                 .addEvent<'success', [result: string]>()
                 .addEvent<'error', [e: unknown]>()
-                .addEvent<'redirect'>()
+                .addEvent<'retry'>()
 
                 .addState('checking?', async (input: string) => {
                     return fn(input)
@@ -593,10 +588,10 @@ describe(FSMBuilder, () => {
 
             .addTransition('choose-action', 'encode-base-64', 'encode.checking?')
             .addTransition('choose-action', 'decode-base-64', 'decode.checking?')
-            .addTransition('encode.resolved', 'redirect', 'result!')
-            .addTransition('decode.resolved', 'redirect', 'result!')
-            .addTransition('encode.rejected', 'redirect', 'error!')
-            .addTransition('decode.rejected', 'redirect', 'error!');
+            .addTransition('encode.resolved', 'retry', 'result!')
+            .addTransition('decode.resolved', 'retry', 'result!')
+            .addTransition('encode.rejected', 'retry', 'error!')
+            .addTransition('decode.rejected', 'retry', 'error!');
 
         const initialFsm = fsmBuilder.build('choose-action');
 
