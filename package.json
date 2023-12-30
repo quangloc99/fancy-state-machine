@@ -34,7 +34,7 @@
         "build:types": "yarn tsc --project ./tsconfig.build.json --module esnext --declarationDir ./dist/_types --emitDeclarationOnly --declaration --declarationMap",
         "clean": "yarn rimraf dist/",
         "test": "yarn jest",
-        "test:coverage": "yarn test --coverage",
+        "test:coverage": "yarn test --coverage --coverageDirectory=coverage",
         "lint:nofix": "yarn eslint \"{src,test}/**/*.{ts,js}\" --quiet",
         "render-examples": "yarn tsx ./examples/main.ts && yarn embedme README.md",
         "lint": "yarn lint:nofix --fix"
