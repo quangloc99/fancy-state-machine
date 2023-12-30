@@ -528,4 +528,101 @@ describe(FSMBuilder, () => {
             expect(fsm.stateData[0]).toEqual('fail');
         });
     });
+
+    describe('base64 encoder/decoder UI', () => {
+        function createFSMForFunction(fn: (input: string) => Promise<string>) {
+            return FSMBuilder.create()
+                .addEvent<'success', [result: string]>()
+                .addEvent<'error', [e: unknown]>()
+                .addEvent<'redirect'>()
+
+                .addState('processing', async (input: string) => {
+                    return fn(input)
+                        .then((res) => ['success', res] as const)
+                        .catch((e: unknown) => ['error', e] as const);
+                })
+                .addState('resolved', (_result: string) => ['redirect'])
+                .addState('rejected', (_e: unknown) => ['redirect'])
+
+                .addTransition('processing', 'success', 'resolved', (_, res) => [res])
+                .addTransition('processing', 'error', 'rejected', (_, e) => [e]);
+        }
+
+        const fsmBuilder = FSMBuilder.create()
+            .addState('choose-action')
+            .addEvent<'encode-base-64', [inp: string]>()
+            .addEvent<'decode-base-64', [inp: string]>()
+
+            .addState('result', (_res: string) => {})
+            .addState('error', (e: string) => {})
+            .addEvent<'continue'>()
+            .addTransition('result', 'continue', 'choose-action', () => [])
+            .addTransition('error', 'continue', 'choose-action', () => [])
+
+            .embed(createFSMForFunction(async (str) => btoa(str)).scope('encode.'))
+            .embed(createFSMForFunction(async (str) => atob(str)).scope('decode.'))
+
+            .addTransition('choose-action', 'encode-base-64', 'encode.processing')
+            .addTransition('choose-action', 'decode-base-64', 'decode.processing')
+            .addTransition('encode.resolved', 'redirect', 'result')
+            .addTransition('decode.resolved', 'redirect', 'result')
+            .addTransition('encode.rejected', 'redirect', 'error')
+            .addTransition('decode.rejected', 'redirect', 'error');
+
+        const initialFsm = fsmBuilder.build('choose-action');
+
+        type TestCase = {
+            raw: string;
+            encoded: string;
+        };
+
+        function createTestCase(raw: string): TestCase {
+            return {
+                raw,
+                encoded: btoa(raw),
+            };
+        }
+
+        const testcases = [
+            createTestCase('a'),
+            createTestCase('b'),
+            createTestCase('c'),
+            createTestCase('69'),
+            createTestCase('420'),
+            createTestCase('177,013'),
+            createTestCase('A quick brown fox jumped over the lazy dog.'),
+        ];
+
+        test.each(testcases)('Test "$raw" <=> "$encoded"', async ({ raw, encoded }) => {
+            const fsm = initialFsm.clone();
+            await fsm.dispatch('encode-base-64', raw);
+            expect(fsm.stateData).toEqual(['result', encoded]);
+            await fsm.dispatch('continue');
+            await fsm.dispatch('decode-base-64', encoded);
+            expect(fsm.stateData).toEqual(['result', raw]);
+        });
+
+        type FailTestCase = {
+            encoded: string;
+        };
+        const failTestCases: FailTestCase[] = [
+            {
+                encoded: '????',
+            },
+            {
+                encoded: (() => {
+                    const s = btoa('a');
+                    // remove padding
+                    return s.slice(0, s.length - 1);
+                })(),
+            },
+        ];
+
+        test.each(failTestCases)('Fail test encoded: "$encoded"', async ({ encoded }) => {
+            const fsm = initialFsm.clone();
+            await fsm.dispatch('decode-base-64', encoded);
+            // console.log(fsm.stateData);
+            expect(fsm.stateData[0]).toBe('error');
+        });
+    });
 });
