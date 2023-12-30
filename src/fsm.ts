@@ -52,6 +52,29 @@ export type TransitionTable<States extends StateDataMap, Events extends EventDat
     };
 };
 
+export function cloneTransitionTable<S extends StateDataMap, E extends EventDataMap>(
+    table: TransitionTable<S, E>
+): TransitionTable<S, E>;
+
+export function cloneTransitionTable(
+    table: TransitionTable<StateDataMap, EventDataMap>
+): TransitionTable<StateDataMap, EventDataMap> {
+    const res = {} as TransitionTable<StateDataMap, EventDataMap>;
+    for (const [srcState, transitionData] of Object.entries(table)) {
+        const clonedTransitions = {} as (typeof res)[string]['transitions'];
+        for (const [evt, transition] of Object.entries(transitionData.transitions)) {
+            if (!transition) continue;
+            clonedTransitions[evt] = { ...transition };
+        }
+        const clonedTransitionData = {
+            enterHandler: transitionData.enterHandler,
+            transitions: clonedTransitions,
+        };
+        res[srcState] = clonedTransitionData;
+    }
+    return res;
+}
+
 export type Transition<
     States extends StateDataMap,
     Events extends EventDataMap,
@@ -209,6 +232,10 @@ export class FSMBuilder<S extends StateDataMap, E extends EventDataMap> {
         return new FSMBuilder({});
     }
 
+    clone(): FSMBuilder<S, E> {
+        return new FSMBuilder(cloneTransitionTable(this.transitionTable));
+    }
+
     addEvent<EventName extends KeyType, EventData extends unknown[] = []>(): FSMBuilder<
         S,
         AddProp<E, EventName, EventData>
@@ -334,7 +361,7 @@ export function renderToMermaid<S extends StateDataMap, E extends EventDataMap>(
     ++indentLv;
 
     const nodeId = new Map<string, string>();
-    const graph = new Map<string, string[]>();
+    const graph = new Map<string, Set<string>>();
     const nonRootSet = new Set<string>();
 
     const getParts =
@@ -345,24 +372,27 @@ export function renderToMermaid<S extends StateDataMap, E extends EventDataMap>(
         const parts = getParts(stateName);
         let curPart = parts[0];
         for (let prv = 0, cur = 1; cur < parts.length; prv = cur++) {
+            const par = curPart;
             curPart += subgraphNameSeparator + parts[cur];
-            if (!graph.has(parts[prv])) {
-                graph.set(parts[prv], [curPart]);
+            if (!graph.has(par)) {
+                graph.set(par, new Set([parts[cur]]));
             } else {
-                graph.get(parts[prv])!.push(curPart);
+                graph.get(par)!.add(parts[cur]);
             }
             nonRootSet.add(curPart);
         }
         if (!graph.has(curPart)) {
-            graph.set(curPart, []);
+            graph.set(curPart, new Set());
         }
     }
 
     let subgraphId = 0;
-    function dfs(curPart: string) {
-        const adj = graph.get(curPart);
-        if (adj == undefined || adj.length == 0) {
-            const stateName = curPart;
+    function dfs(fullName: string, last: string) {
+        const adj = graph.get(fullName);
+        const label = last;
+
+        if (adj == undefined || adj.size == 0) {
+            const stateName = fullName;
             const id = `node${nodeId.size}`;
             nodeId.set(stateName, id);
 
@@ -372,20 +402,18 @@ export function renderToMermaid<S extends StateDataMap, E extends EventDataMap>(
                   ? nodeStyleFmt.terminal
                   : nodeStyleFmt.normal;
 
-            const parts = getParts(curPart);
-
             indent();
-            append(`${id}${nodeLabelFmt(parts[parts.length - 1])}`);
+            append(`${id}${nodeLabelFmt(label)}`);
             newLine();
             return;
         }
         indent();
-        append(`subgraph subgraph${subgraphId++} [${JSON.stringify(curPart)}]`);
+        append(`subgraph subgraph${subgraphId++} [${JSON.stringify(label)}]`);
         newLine();
         ++indentLv;
 
         for (const subPart of adj) {
-            dfs(subPart);
+            dfs(`${fullName}${subgraphNameSeparator}${subPart}`, subPart);
         }
 
         --indentLv;
@@ -396,9 +424,10 @@ export function renderToMermaid<S extends StateDataMap, E extends EventDataMap>(
 
     for (const part of graph.keys()) {
         if (nonRootSet.has(part)) continue;
-        dfs(part);
+        dfs(part, part);
     }
 
+    console.log(nodeId);
     newLine();
 
     for (const [stateName, transitionData] of Object.entries(tt)) {
@@ -406,6 +435,7 @@ export function renderToMermaid<S extends StateDataMap, E extends EventDataMap>(
         for (const [eventName, transition] of Object.entries(transitionData.transitions)) {
             if (transition == undefined) continue;
             const dstId = nodeId.get(transition.target)!;
+            console.log(transition.target);
             indent();
             append(`${srcId}-- ${JSON.stringify(eventName)} --> ${dstId}`);
             newLine();
