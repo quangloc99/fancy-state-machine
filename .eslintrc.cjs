@@ -33,5 +33,6 @@ module.exports = {
                 varsIgnorePattern: '^_',
             },
         ],
+        '@typescript-eslint/require-await': 'off'
     },
 };
