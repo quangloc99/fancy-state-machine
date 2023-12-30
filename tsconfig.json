@@ -1,9 +1,12 @@
 {
     "extends": "./tsconfig.base.json",
-    "include": ["src/**/*", "test/**/*", "scripts/**/*"],
+    "include": ["src/**/*", "test/**/*", "scripts/**/*", "examples/**/*"],
     "compilerOptions": {
         "outDir": "./dist",
-        "rootDirs": ["./src", "./test", "./scripts"]
+        "rootDirs": ["./src", "./test", "./scripts", "examples/**/*"],
+        "paths": {
+            "fancy-state-machine": ["./src"]
+        }
     },
     "ts-node": {
         "files": true,
