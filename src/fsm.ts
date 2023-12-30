@@ -343,7 +343,6 @@ export function renderToMermaid<S extends StateDataMap, E extends EventDataMap>(
     const tt = fsm.transitionTable as TransitionTable<StateDataMap, EventDataMap>;
     for (const stateName of Object.keys(tt)) {
         const parts = getParts(stateName);
-        console.log(parts);
         let curPart = parts[0];
         for (let prv = 0, cur = 1; cur < parts.length; prv = cur++) {
             curPart += subgraphNameSeparator + parts[cur];
