@@ -6,6 +6,7 @@ import {
     FSMFromBuilder,
     OnTransitionCallback,
     OnInvalidTransitionCallback,
+    renderToMermaid,
 } from '../src/index.js';
 
 describe(FSMBuilder, () => {
@@ -62,7 +63,7 @@ describe(FSMBuilder, () => {
         });
 
         test('#renderToMermaid', () => {
-            const mermaidChart = fsmBuilder.renderToMermaid();
+            const mermaidChart = renderToMermaid(fsmBuilder);
             expect(mermaidChart).toMatchSnapshot();
         });
     });
@@ -121,7 +122,7 @@ describe(FSMBuilder, () => {
         );
 
         test('#renderToMermaid', () => {
-            const mermaidChart = fsmBuilder.renderToMermaid();
+            const mermaidChart = renderToMermaid(fsmBuilder);
             expect(mermaidChart).toMatchSnapshot();
         });
     });
@@ -249,7 +250,7 @@ describe(FSMBuilder, () => {
         });
 
         test('#renderToMermaid', () => {
-            const mermaidChart = fsmBuilder.renderToMermaid();
+            const mermaidChart = renderToMermaid(fsmBuilder);
             expect(mermaidChart).toMatchSnapshot();
         });
     });
@@ -467,7 +468,7 @@ describe(FSMBuilder, () => {
         );
 
         test('#renderToMermaid', () => {
-            const mermaidChart = fsmBuilder.renderToMermaid();
+            const mermaidChart = renderToMermaid(fsmBuilder);
             expect(mermaidChart).toMatchSnapshot();
         });
     });
@@ -549,7 +550,7 @@ describe(FSMBuilder, () => {
         });
 
         test('#renderToMermaid', () => {
-            const mermaidChart = fsmBuilder.renderToMermaid({
+            const mermaidChart = renderToMermaid(fsmBuilder, {
                 direction: 'LR',
                 subgraphNameSeparator: '.',
             });
@@ -654,7 +655,7 @@ describe(FSMBuilder, () => {
         });
 
         test('#renderToMermaid', () => {
-            const mermaidChart = fsmBuilder.renderToMermaid({
+            const mermaidChart = renderToMermaid(fsmBuilder, {
                 direction: 'TD',
                 subgraphNameSeparator: '.',
             });
