@@ -1,6 +1,6 @@
 {
     "name": "fancy-state-machine",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "description": "Type-safe, composable, seamless data flow Finite-state machine implementation in TypeScript",
     "author": "Tran Quang Loc <quangloctran99@gmail.com>",
     "license": "MIT",
