@@ -315,6 +315,7 @@ export class FSMBuilder<S extends StateDataMap, E extends EventDataMap> {
         const nodeStyleFmt = {
             normal: (name: string) => `[${JSON.stringify(name)}]`,
             branching: (name: string) => `{${JSON.stringify(name)}}`,
+            terminal: (name: string) => `(((${JSON.stringify(name)})))`,
         };
 
         const buff: string[] = [];
@@ -334,7 +335,11 @@ export class FSMBuilder<S extends StateDataMap, E extends EventDataMap> {
             const id = `node${nodeId.size}`;
             nodeId.set(stateName, id);
             indent();
-            const nodeLabelFmt = stateName.endsWith('?') ? nodeStyleFmt.branching : nodeStyleFmt.normal;
+            const nodeLabelFmt = stateName.endsWith('?')
+                ? nodeStyleFmt.branching
+                : stateName.endsWith('!')
+                  ? nodeStyleFmt.terminal
+                  : nodeStyleFmt.normal;
             append(`${id}${nodeLabelFmt(stateName)}`);
             newLine();
         }
