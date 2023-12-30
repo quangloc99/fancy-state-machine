@@ -308,6 +308,46 @@ export class FSMBuilder<S extends StateDataMap, E extends EventDataMap> {
     build(...initialStateData: StateDataTuple<S>): FSM<S, E> {
         return new FSM(this.transitionTable, initialStateData);
     }
+
+    renderToMermaid(options?: { direction?: 'LR' | 'TD' | 'BT' | 'RL' }) {
+        const { direction = 'TD' } = options ?? {};
+        const buff: string[] = [];
+        const append = (s: string) => buff.push(s);
+        const newLine = () => append('\n');
+
+        let indentLv = 0;
+        const indent = () => append('  '.repeat(indentLv));
+
+        append(`flowchart ${direction}`);
+        newLine();
+        ++indentLv;
+
+        const nodeId = new Map<string, string>();
+        const tt = this.transitionTable as TransitionTable<StateDataMap, EventDataMap>;
+        for (const stateName of Object.keys(tt)) {
+            const id = `node${nodeId.size}`;
+            nodeId.set(stateName, id);
+            indent();
+            append(`${id}[${JSON.stringify(stateName)}]`);
+            newLine();
+        }
+
+        newLine();
+
+        for (const [stateName, transitionData] of Object.entries(tt)) {
+            const srcId = nodeId.get(stateName)!;
+            for (const [eventName, transition] of Object.entries(transitionData.transitions)) {
+                if (transition == undefined) continue;
+                const dstId = nodeId.get(transition.target)!;
+                indent();
+                append(`${srcId}-- ${JSON.stringify(eventName)} --> ${dstId}`);
+                newLine();
+            }
+            newLine();
+        }
+
+        return buff.join('');
+    }
 }
 
 export type FSMFromBuilder<Builder> = Builder extends FSMBuilder<infer S, infer F> ? FSM<S, F> : never;
