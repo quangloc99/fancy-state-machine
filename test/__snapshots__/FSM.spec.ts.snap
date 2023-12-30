@@ -1,5 +1,141 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`FSMBuilder base64 encoder/decoder UI #renderToMermaid 1`] = `
+"flowchart TD
+  node0["choose-action"]
+  node1["result"]
+  node2["error"]
+  node3["encode.processing"]
+  node4["encode.resolved"]
+  node5["encode.rejected"]
+  node6["decode.processing"]
+  node7["decode.resolved"]
+  node8["decode.rejected"]
+
+  node0-- "encode-base-64" --> node3
+  node0-- "decode-base-64" --> node6
+
+  node1-- "continue" --> node0
+
+  node2-- "continue" --> node0
+
+  node3-- "success" --> node4
+  node3-- "error" --> node5
+
+  node4-- "redirect" --> node1
+
+  node5-- "redirect" --> node2
+
+  node6-- "success" --> node7
+  node6-- "error" --> node8
+
+  node7-- "redirect" --> node1
+
+  node8-- "redirect" --> node2
+
+"
+`;
+
+exports[`FSMBuilder complex stateful turnstile #renderToMermaid 1`] = `
+"flowchart TD
+  node0["locked"]
+  node1["processing"]
+  node2["unlocked"]
+
+  node0-- "coin" --> node1
+
+  node1-- "not-enough-amount" --> node0
+  node1-- "enough-amount" --> node2
+
+  node2-- "push" --> node0
+
+"
+`;
+
+exports[`FSMBuilder password #renderToMermaid 1`] = `
+"flowchart TD
+  node0["first-digit.start"]
+  node1["first-digit.unlocked"]
+  node2["first-digit.fail"]
+  node3["first-digit.verifying"]
+  node4["second-digit.start"]
+  node5["second-digit.unlocked"]
+  node6["second-digit.fail"]
+  node7["second-digit.verifying"]
+  node8["third-digit.start"]
+  node9["third-digit.unlocked"]
+  node10["third-digit.fail"]
+  node11["third-digit.verifying"]
+  node12["forth-digit.start"]
+  node13["forth-digit.unlocked"]
+  node14["forth-digit.fail"]
+  node15["forth-digit.verifying"]
+  node16["start"]
+  node17["unlocked"]
+  node18["fail"]
+
+  node0-- "digit" --> node3
+
+  node1-- "redirect" --> node4
+
+  node2-- "redirect" --> node18
+
+  node3-- "wrong" --> node2
+  node3-- "correct" --> node1
+
+  node4-- "digit" --> node7
+
+  node5-- "redirect" --> node8
+
+  node6-- "redirect" --> node18
+
+  node7-- "wrong" --> node6
+  node7-- "correct" --> node5
+
+  node8-- "digit" --> node11
+
+  node9-- "redirect" --> node12
+
+  node10-- "redirect" --> node18
+
+  node11-- "wrong" --> node10
+  node11-- "correct" --> node9
+
+  node12-- "digit" --> node15
+
+  node13-- "redirect" --> node17
+
+  node14-- "redirect" --> node18
+
+  node15-- "wrong" --> node14
+  node15-- "correct" --> node13
+
+  node16-- "redirect" --> node0
+
+
+  node18-- "digit" --> node18
+
+"
+`;
+
+exports[`FSMBuilder simple calculator #renderToMermaid 1`] = `
+"flowchart TD
+  node0["start-entering"]
+  node1["entering"]
+  node2["result"]
+
+  node0-- "digit" --> node1
+
+  node1-- "+" --> node0
+  node1-- "-" --> node0
+  node1-- "*" --> node0
+  node1-- "digit" --> node1
+  node1-- "=" --> node2
+
+
+"
+`;
+
 exports[`FSMBuilder simple calculator 0*69= 0 1`] = `
 [
   "entering",
@@ -1693,4 +1829,31 @@ exports[`FSMBuilder simple calculator 314159265358979= 314159265358979 16`] = `
   "result",
   314159265358979n,
 ]
+`;
+
+exports[`FSMBuilder simple trafic light #renderToMermaid 1`] = `
+"flowchart TD
+  node0["red-light"]
+  node1["green-light"]
+  node2["yellow-light"]
+
+  node0-- "next-light" --> node1
+
+  node1-- "next-light" --> node2
+
+  node2-- "next-light" --> node0
+
+"
+`;
+
+exports[`FSMBuilder simple turnstile #renderToMermaid 1`] = `
+"flowchart TD
+  node0["locked"]
+  node1["unlocked"]
+
+  node0-- "coin" --> node1
+
+  node1-- "push" --> node0
+
+"
 `;

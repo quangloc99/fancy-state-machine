@@ -60,6 +60,11 @@ describe(FSMBuilder, () => {
 ]
 `);
         });
+
+        test('#renderToMermaid', () => {
+            const mermaidChart = fsmBuilder.renderToMermaid();
+            expect(mermaidChart).toMatchSnapshot();
+        });
     });
 
     describe('simple turnstile', () => {
@@ -114,6 +119,11 @@ describe(FSMBuilder, () => {
                 }
             }
         );
+
+        test('#renderToMermaid', () => {
+            const mermaidChart = fsmBuilder.renderToMermaid();
+            expect(mermaidChart).toMatchSnapshot();
+        });
     });
 
     // https://en.wikipedia.org/wiki/Finite-state_machine#Example:_coin-operated_turnstile
@@ -236,6 +246,11 @@ describe(FSMBuilder, () => {
             }
             expect(actualStates).toEqual(stateAfterEach);
             expect(actualEvents).toEqual(allEvents);
+        });
+
+        test('#renderToMermaid', () => {
+            const mermaidChart = fsmBuilder.renderToMermaid();
+            expect(mermaidChart).toMatchSnapshot();
         });
     });
 
@@ -450,6 +465,11 @@ describe(FSMBuilder, () => {
                 expect(errorCause?.event[0]).toBe(event);
             }
         );
+
+        test('#renderToMermaid', () => {
+            const mermaidChart = fsmBuilder.renderToMermaid();
+            expect(mermaidChart).toMatchSnapshot();
+        });
     });
 
     describe('password', () => {
@@ -526,6 +546,11 @@ describe(FSMBuilder, () => {
             const fsm = initialFsm.clone();
             await consumPassword(fsm, pass);
             expect(fsm.stateData[0]).toEqual('fail');
+        });
+
+        test('#renderToMermaid', () => {
+            const mermaidChart = fsmBuilder.renderToMermaid();
+            expect(mermaidChart).toMatchSnapshot();
         });
     });
 
@@ -623,6 +648,11 @@ describe(FSMBuilder, () => {
             await fsm.dispatch('decode-base-64', encoded);
             // console.log(fsm.stateData);
             expect(fsm.stateData[0]).toBe('error');
+        });
+
+        test('#renderToMermaid', () => {
+            const mermaidChart = fsmBuilder.renderToMermaid();
+            expect(mermaidChart).toMatchSnapshot();
         });
     });
 });
