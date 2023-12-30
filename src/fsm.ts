@@ -427,7 +427,6 @@ export function renderToMermaid<S extends StateDataMap, E extends EventDataMap>(
         dfs(part, part);
     }
 
-    console.log(nodeId);
     newLine();
 
     for (const [stateName, transitionData] of Object.entries(tt)) {
@@ -435,7 +434,6 @@ export function renderToMermaid<S extends StateDataMap, E extends EventDataMap>(
         for (const [eventName, transition] of Object.entries(transitionData.transitions)) {
             if (transition == undefined) continue;
             const dstId = nodeId.get(transition.target)!;
-            console.log(transition.target);
             indent();
             append(`${srcId}-- ${JSON.stringify(eventName)} --> ${dstId}`);
             newLine();
