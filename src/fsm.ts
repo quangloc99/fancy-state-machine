@@ -20,12 +20,24 @@ export type EventDataTuple<
     Events extends EventDataMap,
     EventName extends keyof Events = keyof Events,
 > = EventName extends string ? [EventName, ...Events[EventName]] : never;
+export type ReadonlyStateDataTuple<
+    States extends StateDataMap,
+    StateName extends keyof States = keyof States,
+> = StateName extends string ? readonly [StateName, ...States[StateName]] : never;
+export type ReadonlyEventDataTuple<
+    Events extends EventDataMap,
+    EventName extends keyof Events = keyof Events,
+> = EventName extends string ? readonly [EventName, ...Events[EventName]] : never;
 
 export type AddScopeToStateDataMap<S extends StateDataMap, Scope extends string> = Simplify<{
     [KeyType in keyof S as KeyType extends string ? `${Scope}${KeyType}` : never]: S[KeyType];
 }>;
 
-export type EnterHandlerFunctionReturnType<E extends EventDataMap> = void | undefined | null | EventDataTuple<E>;
+export type EnterHandlerFunctionReturnType<E extends EventDataMap> =
+    | void
+    | undefined
+    | null
+    | ReadonlyEventDataTuple<E>;
 export type EnterHandlerFunction<E extends EventDataMap, Params extends unknown[] = unknown[]> = (
     this: void,
     ...params: Params
@@ -60,8 +72,8 @@ export type AnyTransitionTable = TransitionTable<StateDataMap, EventDataMap>;
 
 export class InvalidTransitionEventCause<S extends StateDataMap, E extends EventDataMap> {
     constructor(
-        readonly fromState: StateDataTuple<S>,
-        readonly event: EventDataTuple<E>
+        readonly fromState: ReadonlyStateDataTuple<S>,
+        readonly event: ReadonlyEventDataTuple<E>
     ) {}
 }
 
@@ -98,15 +110,15 @@ export class FSM<S extends StateDataMap, E extends EventDataMap> {
     }
 
     async fullDispatch(
-        _event: EventDataTuple<E>,
+        _event: ReadonlyEventDataTuple<E>,
         options?: {
             ignoreInvalidTransition?: boolean;
             onTransition?: (
-                fromState: StateDataTuple<S>,
-                event: EventDataTuple<E>,
-                targetState: StateDataTuple<S>
+                fromState: ReadonlyStateDataTuple<S>,
+                event: ReadonlyEventDataTuple<E>,
+                targetState: ReadonlyStateDataTuple<S>
             ) => void;
-            onInvalidTransition?: (fromState: StateDataTuple<S>, event: EventDataTuple<E>) => void;
+            onInvalidTransition?: (fromState: ReadonlyStateDataTuple<S>, event: ReadonlyEventDataTuple<E>) => void;
         }
     ): Promise<void> {
         const {
@@ -116,9 +128,8 @@ export class FSM<S extends StateDataMap, E extends EventDataMap> {
         } = options ?? {};
 
         let curEvent: EnterHandlerFunctionReturnType<E> = _event;
-
-        while (Array.isArray(curEvent)) {
-            const [eventName, ...eventData] = curEvent as EventDataTuple<E>;
+        while (FSM.isEventDataTuple(curEvent)) {
+            const [eventName, ...eventData] = curEvent;
             const [curStateName, ...curStateData] = this.stateData;
             const transitionData = this.transitionTable[curStateName].transitions[eventName];
             if (transitionData === undefined) {
@@ -128,7 +139,7 @@ export class FSM<S extends StateDataMap, E extends EventDataMap> {
                         `No transition from state ${JSON.stringify(
                             String(this.stateData[0])
                         )} when event ${JSON.stringify(String(curEvent[0]))} is fired`,
-                        { cause: new InvalidTransitionEventCause<S, E>(this.stateData, curEvent) }
+                        { cause: new InvalidTransitionEventCause(this.stateData, curEvent) }
                     );
                 } else {
                     return;
@@ -157,12 +168,16 @@ export class FSM<S extends StateDataMap, E extends EventDataMap> {
      */
     async drain(options?: {
         ignoreInvalidTransition?: boolean;
-        onTransition?: (fromState: StateDataTuple<S>, event: EventDataTuple<E>, targetState: StateDataTuple<S>) => void;
-        onInvalidTransition?: (fromState: StateDataTuple<S>, event: EventDataTuple<E>) => void;
+        onTransition?: (
+            fromState: ReadonlyStateDataTuple<S>,
+            event: ReadonlyEventDataTuple<E>,
+            targetState: ReadonlyStateDataTuple<S>
+        ) => void;
+        onInvalidTransition?: (fromState: ReadonlyStateDataTuple<S>, event: ReadonlyEventDataTuple<E>) => void;
     }): Promise<void> {
         const [state, ...data] = this.stateData;
         const newEvent = await this.transitionTable[state].enterHandler(...data);
-        if (Array.isArray(newEvent)) {
+        if (FSM.isEventDataTuple(newEvent)) {
             return this.fullDispatch(newEvent, options);
         }
     }
@@ -170,6 +185,12 @@ export class FSM<S extends StateDataMap, E extends EventDataMap> {
     getErrorCause<Cause extends AllCauses<S, E>>(e: unknown, causeClass: Constructor<Cause>): Cause | undefined {
         if (!(e instanceof Error)) return undefined;
         if (e.cause instanceof causeClass) return e.cause;
+    }
+
+    private static isEventDataTuple<E extends EventDataMap>(
+        e: EnterHandlerFunctionReturnType<E>
+    ): e is ReadonlyEventDataTuple<E> {
+        return Array.isArray(e);
     }
 }
 
