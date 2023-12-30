@@ -13,6 +13,7 @@
         "@types/jest": "^29.5.11",
         "@typescript-eslint/eslint-plugin": "^6.16.0",
         "@typescript-eslint/parser": "^6.16.0",
+        "embedme": "^1.22.1",
         "eslint": "^8.56.0",
         "eslint-config-prettier": "^9.1.0",
         "eslint-plugin-prettier": "^5.1.2",
@@ -35,6 +36,7 @@
         "test": "yarn jest",
         "test:coverage": "yarn test --coverage",
         "lint:nofix": "yarn eslint \"{src,test}/**/*.{ts,js}\" --quiet",
+        "render-examples": "yarn tsx ./examples/main.ts && yarn embedme README.md",
         "lint": "yarn lint:nofix --fix"
     },
     "packageManager": "yarn@4.0.2",
