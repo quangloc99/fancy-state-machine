@@ -9,6 +9,21 @@
     "module": "./dist/_esm/index.js",
     "types": "./dist/_types/index.d.ts",
     "typings": "./dist/_types/index.d.ts",
+    "keywords": [
+        "type-safe",
+        "fsm",
+        "finite state machine",
+        "state machine",
+        "state",
+        "finite automata",
+        "composable"
+    ],
+    "files": [
+        "README.md",
+        "dist",
+        "src",
+        "examples"
+    ],
     "devDependencies": {
         "@types/jest": "^29.5.11",
         "@typescript-eslint/eslint-plugin": "^6.16.0",
