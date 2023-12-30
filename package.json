@@ -24,6 +24,10 @@
         "src",
         "examples"
     ],
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/quangloc99/fancy-state-machine"
+    },
     "devDependencies": {
         "@types/jest": "^29.5.11",
         "@typescript-eslint/eslint-plugin": "^6.16.0",
