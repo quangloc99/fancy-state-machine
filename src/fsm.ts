@@ -311,6 +311,12 @@ export class FSMBuilder<S extends StateDataMap, E extends EventDataMap> {
 
     renderToMermaid(options?: { direction?: 'LR' | 'TD' | 'BT' | 'RL' }) {
         const { direction = 'TD' } = options ?? {};
+
+        const nodeStyleFmt = {
+            normal: (name: string) => `[${JSON.stringify(name)}]`,
+            branching: (name: string) => `{${JSON.stringify(name)}}`,
+        };
+
         const buff: string[] = [];
         const append = (s: string) => buff.push(s);
         const newLine = () => append('\n');
@@ -328,7 +334,8 @@ export class FSMBuilder<S extends StateDataMap, E extends EventDataMap> {
             const id = `node${nodeId.size}`;
             nodeId.set(stateName, id);
             indent();
-            append(`${id}[${JSON.stringify(stateName)}]`);
+            const nodeLabelFmt = stateName.endsWith('?') ? nodeStyleFmt.branching : nodeStyleFmt.normal;
+            append(`${id}${nodeLabelFmt(stateName)}`);
             newLine();
         }
 
