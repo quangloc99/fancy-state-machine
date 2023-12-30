@@ -14,6 +14,7 @@ const config: Config = {
     testPathIgnorePatterns: ['node_modules/'],
     moduleNameMapper: {
         '^(\\.{1,2}/.*)\\.js$': '$1',
+        'fancy-state-machine': '<rootDir>/src/index',
     },
     transform: {
         '^.+\\.ts?$': [
