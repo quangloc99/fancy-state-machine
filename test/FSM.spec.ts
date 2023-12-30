@@ -547,8 +547,8 @@ describe(FSMBuilder, () => {
             .addTransition('result!', 'continue', 'choose-action', () => [])
             .addTransition('error!', 'continue', 'choose-action', () => [])
 
-            .embed(createFSMForFunction(async (str) => btoa(str)).scope('encode.'))
-            .embed(createFSMForFunction(async (str) => atob(str)).scope('decode.'))
+            .embed(createFSMForFunction((str) => Promise.resolve(btoa(str))).scope('encode.'))
+            .embed(createFSMForFunction((str) => Promise.resolve(atob(str))).scope('decode.'))
 
             .addTransition('choose-action', 'encode-base-64', 'encode.checking?')
             .addTransition('choose-action', 'decode-base-64', 'decode.checking?')

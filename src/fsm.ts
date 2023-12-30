@@ -371,7 +371,7 @@ export function renderToMermaid<S extends StateDataMap, E extends EventDataMap>(
     for (const stateName of Object.keys(tt)) {
         const parts = getParts(stateName);
         let curPart = parts[0];
-        for (let prv = 0, cur = 1; cur < parts.length; prv = cur++) {
+        for (let cur = 1; cur < parts.length; cur++) {
             const par = curPart;
             curPart += subgraphNameSeparator + parts[cur];
             if (!graph.has(par)) {
