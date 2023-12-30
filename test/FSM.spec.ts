@@ -137,17 +137,17 @@ describe(FSMBuilder, () => {
             .addEvent<'push'>()
 
             .addState('locked', (_currentAmount: number) => {})
-            .addState('processing', (currentAmount: number) => {
+            .addState('checking?', (currentAmount: number) => {
                 if (currentAmount >= 10) return ['enough-amount'];
                 return ['not-enough-amount'];
             })
             .addState('unlocked')
 
-            .addTransition('locked', 'coin', 'processing', (currentAmount, additionalAmount) => [
+            .addTransition('locked', 'coin', 'checking?', (currentAmount, additionalAmount) => [
                 currentAmount + additionalAmount,
             ])
-            .addTransition('processing', 'not-enough-amount', 'locked')
-            .addTransition('processing', 'enough-amount', 'unlocked', () => [])
+            .addTransition('checking?', 'not-enough-amount', 'locked')
+            .addTransition('checking?', 'enough-amount', 'unlocked', () => [])
             .addTransition('unlocked', 'push', 'locked', () => [0]);
 
         const initialFsm = fsmBuilder.build('locked', 0).setOptions({
@@ -268,7 +268,7 @@ describe(FSMBuilder, () => {
             .addEvent<'digit', [d: 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9]>()
             .addState('start-entering', (_currentSum: bigint, _currentTerm: bigint) => {})
             .addState('entering', (_currentSum: bigint, _currentTerm: bigint, _currentOperand: bigint) => {})
-            .addState<'result', [result: bigint]>('result')
+            .addState<'result!', [result: bigint]>('result!')
 
             .addTransition('entering', '+', 'start-entering', (currentSum, currentTerm, currentOperand) => {
                 currentSum += currentTerm * currentOperand;
@@ -291,7 +291,7 @@ describe(FSMBuilder, () => {
             .addTransition('start-entering', 'digit', 'entering', (currentSum, currentTerm, digit) => {
                 return [currentSum, currentTerm, BigInt(digit)];
             })
-            .addTransition('entering', '=', 'result', (currentSum, currentTerm, currentOperand) => {
+            .addTransition('entering', '=', 'result!', (currentSum, currentTerm, currentOperand) => {
                 currentSum += currentTerm * currentOperand;
                 return [currentSum];
             });
@@ -384,7 +384,7 @@ describe(FSMBuilder, () => {
                 await evaluateSingleChar(fsm, ch);
                 expect(fsm.stateData).toMatchSnapshot();
             }
-            expect(fsm.stateData).toEqual(['result', result]);
+            expect(fsm.stateData).toEqual(['result!', result]);
         });
 
         type FailTestCase = {
@@ -395,27 +395,27 @@ describe(FSMBuilder, () => {
         const failTestCases: FailTestCase[] = [
             {
                 sequence: '1=1',
-                sourceState: 'result',
+                sourceState: 'result!',
                 event: 'digit',
             },
             {
                 sequence: '1==1',
-                sourceState: 'result',
+                sourceState: 'result!',
                 event: '=',
             },
             {
                 sequence: '0=+',
-                sourceState: 'result',
+                sourceState: 'result!',
                 event: '+',
             },
             {
                 sequence: '0=-',
-                sourceState: 'result',
+                sourceState: 'result!',
                 event: '-',
             },
             {
                 sequence: '0=*',
-                sourceState: 'result',
+                sourceState: 'result!',
                 event: '*',
             },
             {
@@ -484,12 +484,12 @@ describe(FSMBuilder, () => {
                 .addState('start')
                 .addState('unlocked', () => ['redirect'])
                 .addState('fail', () => ['redirect'])
-                .addState('verifying', (d: Digit) => {
+                .addState('verifying?', (d: Digit) => {
                     return d === pass ? ['correct'] : ['wrong'];
                 })
-                .addTransition('start', 'digit', 'verifying')
-                .addTransition('verifying', 'wrong', 'fail', () => [])
-                .addTransition('verifying', 'correct', 'unlocked', () => []);
+                .addTransition('start', 'digit', 'verifying?')
+                .addTransition('verifying?', 'wrong', 'fail', () => [])
+                .addTransition('verifying?', 'correct', 'unlocked', () => []);
         }
 
         const fsmBuilder = FSMBuilder.create()
@@ -499,19 +499,19 @@ describe(FSMBuilder, () => {
             .embed(createSingleDigitPassword(3).scope('forth-digit.'))
 
             .addState('start', () => ['redirect'])
-            .addState('unlocked')
-            .addState('fail')
+            .addState('unlocked!')
+            .addState('fail!')
 
             .addTransition('start', 'redirect', 'first-digit.start')
             .addTransition('first-digit.unlocked', 'redirect', 'second-digit.start')
             .addTransition('second-digit.unlocked', 'redirect', 'third-digit.start')
             .addTransition('third-digit.unlocked', 'redirect', 'forth-digit.start')
-            .addTransition('forth-digit.unlocked', 'redirect', 'unlocked')
-            .addTransition('first-digit.fail', 'redirect', 'fail')
-            .addTransition('second-digit.fail', 'redirect', 'fail')
-            .addTransition('third-digit.fail', 'redirect', 'fail')
-            .addTransition('forth-digit.fail', 'redirect', 'fail')
-            .addTransition('fail', 'digit', 'fail', () => []);
+            .addTransition('forth-digit.unlocked', 'redirect', 'unlocked!')
+            .addTransition('first-digit.fail', 'redirect', 'fail!')
+            .addTransition('second-digit.fail', 'redirect', 'fail!')
+            .addTransition('third-digit.fail', 'redirect', 'fail!')
+            .addTransition('forth-digit.fail', 'redirect', 'fail!')
+            .addTransition('fail!', 'digit', 'fail!', () => []);
         const initialFsm = fsmBuilder.build('start');
 
         beforeAll(async () => {
@@ -528,7 +528,7 @@ describe(FSMBuilder, () => {
         it('should unlock on correct password', async () => {
             const fsm = initialFsm.clone();
             await consumPassword(fsm, [4, 2, 1, 3]);
-            expect(fsm.stateData).toEqual(['unlocked']);
+            expect(fsm.stateData).toEqual(['unlocked!']);
         });
 
         const testPasswords = [
@@ -545,7 +545,7 @@ describe(FSMBuilder, () => {
         test.each(testPasswords)('Should fail on incorrect password %d,%d,%d,%d', async (...pass) => {
             const fsm = initialFsm.clone();
             await consumPassword(fsm, pass);
-            expect(fsm.stateData[0]).toEqual('fail');
+            expect(fsm.stateData[0]).toEqual('fail!');
         });
 
         test('#renderToMermaid', () => {
@@ -561,7 +561,7 @@ describe(FSMBuilder, () => {
                 .addEvent<'error', [e: unknown]>()
                 .addEvent<'redirect'>()
 
-                .addState('processing', async (input: string) => {
+                .addState('checking?', async (input: string) => {
                     return fn(input)
                         .then((res) => ['success', res] as const)
                         .catch((e: unknown) => ['error', e] as const);
@@ -569,8 +569,8 @@ describe(FSMBuilder, () => {
                 .addState('resolved', (_result: string) => ['redirect'])
                 .addState('rejected', (_e: unknown) => ['redirect'])
 
-                .addTransition('processing', 'success', 'resolved', (_, res) => [res])
-                .addTransition('processing', 'error', 'rejected', (_, e) => [e]);
+                .addTransition('checking?', 'success', 'resolved', (_, res) => [res])
+                .addTransition('checking?', 'error', 'rejected', (_, e) => [e]);
         }
 
         const fsmBuilder = FSMBuilder.create()
@@ -578,21 +578,21 @@ describe(FSMBuilder, () => {
             .addEvent<'encode-base-64', [inp: string]>()
             .addEvent<'decode-base-64', [inp: string]>()
 
-            .addState('result', (_res: string) => {})
-            .addState('error', (e: string) => {})
+            .addState('result!', (_res: string) => {})
+            .addState('error!', (_e: string) => {})
             .addEvent<'continue'>()
-            .addTransition('result', 'continue', 'choose-action', () => [])
-            .addTransition('error', 'continue', 'choose-action', () => [])
+            .addTransition('result!', 'continue', 'choose-action', () => [])
+            .addTransition('error!', 'continue', 'choose-action', () => [])
 
             .embed(createFSMForFunction(async (str) => btoa(str)).scope('encode.'))
             .embed(createFSMForFunction(async (str) => atob(str)).scope('decode.'))
 
-            .addTransition('choose-action', 'encode-base-64', 'encode.processing')
-            .addTransition('choose-action', 'decode-base-64', 'decode.processing')
-            .addTransition('encode.resolved', 'redirect', 'result')
-            .addTransition('decode.resolved', 'redirect', 'result')
-            .addTransition('encode.rejected', 'redirect', 'error')
-            .addTransition('decode.rejected', 'redirect', 'error');
+            .addTransition('choose-action', 'encode-base-64', 'encode.checking?')
+            .addTransition('choose-action', 'decode-base-64', 'decode.checking?')
+            .addTransition('encode.resolved', 'redirect', 'result!')
+            .addTransition('decode.resolved', 'redirect', 'result!')
+            .addTransition('encode.rejected', 'redirect', 'error!')
+            .addTransition('decode.rejected', 'redirect', 'error!');
 
         const initialFsm = fsmBuilder.build('choose-action');
 
@@ -621,10 +621,10 @@ describe(FSMBuilder, () => {
         test.each(testcases)('Test "$raw" <=> "$encoded"', async ({ raw, encoded }) => {
             const fsm = initialFsm.clone();
             await fsm.dispatch('encode-base-64', raw);
-            expect(fsm.stateData).toEqual(['result', encoded]);
+            expect(fsm.stateData).toEqual(['result!', encoded]);
             await fsm.dispatch('continue');
             await fsm.dispatch('decode-base-64', encoded);
-            expect(fsm.stateData).toEqual(['result', raw]);
+            expect(fsm.stateData).toEqual(['result!', raw]);
         });
 
         type FailTestCase = {
@@ -647,11 +647,13 @@ describe(FSMBuilder, () => {
             const fsm = initialFsm.clone();
             await fsm.dispatch('decode-base-64', encoded);
             // console.log(fsm.stateData);
-            expect(fsm.stateData[0]).toBe('error');
+            expect(fsm.stateData[0]).toBe('error!');
         });
 
         test('#renderToMermaid', () => {
-            const mermaidChart = fsmBuilder.renderToMermaid();
+            const mermaidChart = fsmBuilder.renderToMermaid({
+                direction: 'LR',
+            });
             expect(mermaidChart).toMatchSnapshot();
         });
     });
