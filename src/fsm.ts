@@ -308,110 +308,113 @@ export class FSMBuilder<S extends StateDataMap, E extends EventDataMap> {
     build(...initialStateData: StateDataTuple<S>): FSM<S, E> {
         return new FSM(this.transitionTable, initialStateData);
     }
+}
 
-    renderToMermaid(options?: { direction?: 'LR' | 'TD' | 'BT' | 'RL'; subgraphNameSeparator?: string }) {
-        const { direction = 'TD', subgraphNameSeparator } = options ?? {};
+export function renderToMermaid<S extends StateDataMap, E extends EventDataMap>(
+    fsm: FSM<S, E> | FSMBuilder<S, E>,
+    options?: { direction?: 'LR' | 'TD' | 'BT' | 'RL'; subgraphNameSeparator?: string }
+) {
+    const { direction = 'TD', subgraphNameSeparator } = options ?? {};
 
-        const nodeStyleFmt = {
-            normal: (name: string) => `[${JSON.stringify(name)}]`,
-            branching: (name: string) => `{${JSON.stringify(name)}}`,
-            terminal: (name: string) => `(((${JSON.stringify(name)})))`,
-        };
+    const nodeStyleFmt = {
+        normal: (name: string) => `[${JSON.stringify(name)}]`,
+        branching: (name: string) => `{${JSON.stringify(name)}}`,
+        terminal: (name: string) => `(((${JSON.stringify(name)})))`,
+    };
 
-        const buff: string[] = [];
-        const append = (s: string) => buff.push(s);
-        const newLine = () => append('\n');
+    const buff: string[] = [];
+    const append = (s: string) => buff.push(s);
+    const newLine = () => append('\n');
 
-        let indentLv = 0;
-        const indent = () => append('  '.repeat(indentLv));
+    let indentLv = 0;
+    const indent = () => append('  '.repeat(indentLv));
 
-        append(`flowchart ${direction}`);
+    append(`flowchart ${direction}`);
+    newLine();
+    ++indentLv;
+
+    const nodeId = new Map<string, string>();
+    const graph = new Map<string, string[]>();
+    const nonRootSet = new Set<string>();
+
+    const getParts =
+        subgraphNameSeparator == null ? (str: string) => [str] : (str: string) => str.split(subgraphNameSeparator);
+
+    const tt = fsm.transitionTable as TransitionTable<StateDataMap, EventDataMap>;
+    for (const stateName of Object.keys(tt)) {
+        const parts = getParts(stateName);
+        console.log(parts);
+        let curPart = parts[0];
+        for (let prv = 0, cur = 1; cur < parts.length; prv = cur++) {
+            curPart += subgraphNameSeparator + parts[cur];
+            if (!graph.has(parts[prv])) {
+                graph.set(parts[prv], [curPart]);
+            } else {
+                graph.get(parts[prv])!.push(curPart);
+            }
+            nonRootSet.add(curPart);
+        }
+        if (!graph.has(curPart)) {
+            graph.set(curPart, []);
+        }
+    }
+
+    let subgraphId = 0;
+    function dfs(curPart: string) {
+        const adj = graph.get(curPart);
+        if (adj == undefined || adj.length == 0) {
+            const stateName = curPart;
+            const id = `node${nodeId.size}`;
+            nodeId.set(stateName, id);
+
+            const nodeLabelFmt = stateName.endsWith('?')
+                ? nodeStyleFmt.branching
+                : stateName.endsWith('!')
+                  ? nodeStyleFmt.terminal
+                  : nodeStyleFmt.normal;
+
+            const parts = getParts(curPart);
+
+            indent();
+            append(`${id}${nodeLabelFmt(parts[parts.length - 1])}`);
+            newLine();
+            return;
+        }
+        indent();
+        append(`subgraph subgraph${subgraphId++} [${JSON.stringify(curPart)}]`);
         newLine();
         ++indentLv;
 
-        const nodeId = new Map<string, string>();
-        const graph = new Map<string, string[]>();
-        const nonRootSet = new Set<string>();
-
-        const getParts =
-            subgraphNameSeparator == null ? (str: string) => [str] : (str: string) => str.split(subgraphNameSeparator);
-
-        const tt = this.transitionTable as TransitionTable<StateDataMap, EventDataMap>;
-        for (const stateName of Object.keys(tt)) {
-            const parts = getParts(stateName);
-            console.log(parts);
-            let curPart = parts[0];
-            for (let prv = 0, cur = 1; cur < parts.length; prv = cur++) {
-                curPart += subgraphNameSeparator + parts[cur];
-                if (!graph.has(parts[prv])) {
-                    graph.set(parts[prv], [curPart]);
-                } else {
-                    graph.get(parts[prv])!.push(curPart);
-                }
-                nonRootSet.add(curPart);
-            }
-            if (!graph.has(curPart)) {
-                graph.set(curPart, []);
-            }
+        for (const subPart of adj) {
+            dfs(subPart);
         }
 
-        let subgraphId = 0;
-        function dfs(curPart: string) {
-            const adj = graph.get(curPart);
-            if (adj == undefined || adj.length == 0) {
-                const stateName = curPart;
-                const id = `node${nodeId.size}`;
-                nodeId.set(stateName, id);
-
-                const nodeLabelFmt = stateName.endsWith('?')
-                    ? nodeStyleFmt.branching
-                    : stateName.endsWith('!')
-                      ? nodeStyleFmt.terminal
-                      : nodeStyleFmt.normal;
-
-                const parts = getParts(curPart);
-
-                indent();
-                append(`${id}${nodeLabelFmt(parts[parts.length - 1])}`);
-                newLine();
-                return;
-            }
-            indent();
-            append(`subgraph subgraph${subgraphId++} [${JSON.stringify(curPart)}]`);
-            newLine();
-            ++indentLv;
-
-            for (const subPart of adj) {
-                dfs(subPart);
-            }
-
-            --indentLv;
-            indent();
-            append('end');
-            newLine();
-        }
-
-        for (const part of graph.keys()) {
-            if (nonRootSet.has(part)) continue;
-            dfs(part);
-        }
-
+        --indentLv;
+        indent();
+        append('end');
         newLine();
+    }
 
-        for (const [stateName, transitionData] of Object.entries(tt)) {
-            const srcId = nodeId.get(stateName)!;
-            for (const [eventName, transition] of Object.entries(transitionData.transitions)) {
-                if (transition == undefined) continue;
-                const dstId = nodeId.get(transition.target)!;
-                indent();
-                append(`${srcId}-- ${JSON.stringify(eventName)} --> ${dstId}`);
-                newLine();
-            }
+    for (const part of graph.keys()) {
+        if (nonRootSet.has(part)) continue;
+        dfs(part);
+    }
+
+    newLine();
+
+    for (const [stateName, transitionData] of Object.entries(tt)) {
+        const srcId = nodeId.get(stateName)!;
+        for (const [eventName, transition] of Object.entries(transitionData.transitions)) {
+            if (transition == undefined) continue;
+            const dstId = nodeId.get(transition.target)!;
+            indent();
+            append(`${srcId}-- ${JSON.stringify(eventName)} --> ${dstId}`);
             newLine();
         }
-
-        return buff.join('');
+        newLine();
     }
+
+    return buff.join('');
 }
 
 export type FSMFromBuilder<Builder> = Builder extends FSMBuilder<infer S, infer F> ? FSM<S, F> : never;
