@@ -662,4 +662,28 @@ describe(FSMBuilder, () => {
             expect(mermaidChart).toMatchSnapshot();
         });
     });
+
+    test('render multi-subgraph FSM', () => {
+        const f1 = FSMBuilder.create().addEvent<'x'>().addState('foo').addState('bar').addTransition('foo', 'x', 'bar');
+        const f2 = FSMBuilder.create()
+            .addEvent<'y'>()
+            .embed(f1.clone().scope('foo/'))
+            .embed(f1.clone().scope('bar/'))
+            .addTransition('foo/bar', 'y', 'bar/foo');
+        const f3 = FSMBuilder.create()
+            .addEvent<'z'>()
+            .embed(f2.clone().scope('foo/'))
+            .embed(f2.clone().scope('bar/'))
+            .addTransition('foo/bar/bar', 'z', 'bar/foo/foo');
+        const f4 = FSMBuilder.create()
+            .addEvent<'t'>()
+            .embed(f3.clone().scope('foo/'))
+            .embed(f3.clone().scope('bar/'))
+            .addTransition('foo/bar/bar/bar', 't', 'bar/foo/foo/foo');
+        const chart = renderToMermaid(f4, {
+            direction: 'RL',
+            subgraphNameSeparator: '/',
+        });
+        expect(chart).toMatchSnapshot();
+    });
 });

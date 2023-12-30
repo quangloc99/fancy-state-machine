@@ -130,6 +130,87 @@ exports[`FSMBuilder password #renderToMermaid 1`] = `
 "
 `;
 
+exports[`FSMBuilder render multi-subgraph FSM 1`] = `
+"flowchart RL
+  subgraph subgraph0 ["foo"]
+    subgraph subgraph1 ["foo"]
+      subgraph subgraph2 ["foo"]
+        node0["foo"]
+        node1["bar"]
+      end
+      subgraph subgraph3 ["bar"]
+        node2["foo"]
+        node3["bar"]
+      end
+    end
+    subgraph subgraph4 ["bar"]
+      subgraph subgraph5 ["foo"]
+        node4["foo"]
+        node5["bar"]
+      end
+      subgraph subgraph6 ["bar"]
+        node6["foo"]
+        node7["bar"]
+      end
+    end
+  end
+  subgraph subgraph7 ["bar"]
+    subgraph subgraph8 ["foo"]
+      subgraph subgraph9 ["foo"]
+        node8["foo"]
+        node9["bar"]
+      end
+      subgraph subgraph10 ["bar"]
+        node10["foo"]
+        node11["bar"]
+      end
+    end
+    subgraph subgraph11 ["bar"]
+      subgraph subgraph12 ["foo"]
+        node12["foo"]
+        node13["bar"]
+      end
+      subgraph subgraph13 ["bar"]
+        node14["foo"]
+        node15["bar"]
+      end
+    end
+  end
+
+  node0-- "x" --> node1
+
+  node1-- "y" --> node2
+
+  node2-- "x" --> node3
+
+  node3-- "z" --> node4
+
+  node4-- "x" --> node5
+
+  node5-- "y" --> node6
+
+  node6-- "x" --> node7
+
+  node7-- "t" --> node8
+
+  node8-- "x" --> node9
+
+  node9-- "y" --> node10
+
+  node10-- "x" --> node11
+
+  node11-- "z" --> node12
+
+  node12-- "x" --> node13
+
+  node13-- "y" --> node14
+
+  node14-- "x" --> node15
+
+
+"
+`;
+
 exports[`FSMBuilder simple calculator #renderToMermaid 1`] = `
 "flowchart TD
   node0["start-entering"]
