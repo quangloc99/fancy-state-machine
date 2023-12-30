@@ -549,7 +549,10 @@ describe(FSMBuilder, () => {
         });
 
         test('#renderToMermaid', () => {
-            const mermaidChart = fsmBuilder.renderToMermaid();
+            const mermaidChart = fsmBuilder.renderToMermaid({
+                direction: 'LR',
+                subgraphNameSeparator: '.',
+            });
             expect(mermaidChart).toMatchSnapshot();
         });
     });
@@ -652,7 +655,8 @@ describe(FSMBuilder, () => {
 
         test('#renderToMermaid', () => {
             const mermaidChart = fsmBuilder.renderToMermaid({
-                direction: 'LR',
+                direction: 'TD',
+                subgraphNameSeparator: '.',
             });
             expect(mermaidChart).toMatchSnapshot();
         });

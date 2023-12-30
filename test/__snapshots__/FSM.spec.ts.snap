@@ -1,16 +1,20 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`FSMBuilder base64 encoder/decoder UI #renderToMermaid 1`] = `
-"flowchart LR
+"flowchart TD
   node0["choose-action"]
   node1((("result!")))
   node2((("error!")))
-  node3{"encode.checking?"}
-  node4["encode.resolved"]
-  node5["encode.rejected"]
-  node6{"decode.checking?"}
-  node7["decode.resolved"]
-  node8["decode.rejected"]
+  subgraph subgraph0 ["encode"]
+    node3{"checking?"}
+    node4["resolved"]
+    node5["rejected"]
+  end
+  subgraph subgraph1 ["decode"]
+    node6{"checking?"}
+    node7["resolved"]
+    node8["rejected"]
+  end
 
   node0-- "encode-base-64" --> node3
   node0-- "decode-base-64" --> node6
@@ -53,23 +57,31 @@ exports[`FSMBuilder complex stateful turnstile #renderToMermaid 1`] = `
 `;
 
 exports[`FSMBuilder password #renderToMermaid 1`] = `
-"flowchart TD
-  node0["first-digit.start"]
-  node1["first-digit.unlocked"]
-  node2["first-digit.fail"]
-  node3{"first-digit.verifying?"}
-  node4["second-digit.start"]
-  node5["second-digit.unlocked"]
-  node6["second-digit.fail"]
-  node7{"second-digit.verifying?"}
-  node8["third-digit.start"]
-  node9["third-digit.unlocked"]
-  node10["third-digit.fail"]
-  node11{"third-digit.verifying?"}
-  node12["forth-digit.start"]
-  node13["forth-digit.unlocked"]
-  node14["forth-digit.fail"]
-  node15{"forth-digit.verifying?"}
+"flowchart LR
+  subgraph subgraph0 ["first-digit"]
+    node0["start"]
+    node1["unlocked"]
+    node2["fail"]
+    node3{"verifying?"}
+  end
+  subgraph subgraph1 ["second-digit"]
+    node4["start"]
+    node5["unlocked"]
+    node6["fail"]
+    node7{"verifying?"}
+  end
+  subgraph subgraph2 ["third-digit"]
+    node8["start"]
+    node9["unlocked"]
+    node10["fail"]
+    node11{"verifying?"}
+  end
+  subgraph subgraph3 ["forth-digit"]
+    node12["start"]
+    node13["unlocked"]
+    node14["fail"]
+    node15{"verifying?"}
+  end
   node16["start"]
   node17((("unlocked!")))
   node18((("fail!")))
